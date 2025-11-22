@@ -1,15 +1,16 @@
 <?php
 
+use App\Actions\RegisterShop;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
 new #[Layout('layouts.guest')] class extends Component
 {
+    public string $shop_name = '';
     public string $name = '';
     public string $email = '';
     public string $password = '';
@@ -18,17 +19,16 @@ new #[Layout('layouts.guest')] class extends Component
     /**
      * Handle an incoming registration request.
      */
-    public function register(): void
+    public function register(RegisterShop $registerShop): void
     {
         $validated = $this->validate([
+            'shop_name' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
-
-        event(new Registered($user = User::create($validated)));
+        event(new Registered($user = $registerShop($validated)));
 
         Auth::login($user);
 
@@ -38,10 +38,17 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div>
     <form wire:submit="register">
-        <!-- Name -->
+        <!-- Shop -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" class="block mt-1 w-full" type="text" name="name" required autofocus autocomplete="name" />
+            <x-input-label for="shop_name" :value="__('Shop name')" />
+            <x-text-input wire:model="shop_name" id="shop_name" class="block mt-1 w-full" type="text" name="shop_name" required autofocus autocomplete="organization" />
+            <x-input-error :messages="$errors->get('shop_name')" class="mt-2" />
+        </div>
+
+        <!-- Name -->
+        <div class="mt-4">
+            <x-input-label for="name" :value="__('Your name')" />
+            <x-text-input wire:model="name" id="name" class="block mt-1 w-full" type="text" name="name" required autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
