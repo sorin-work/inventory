@@ -21,6 +21,12 @@ new class extends Component
                 ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => 'dashboard'],
             ],
         ],
+        [
+            'title' => 'Setup',
+            'items' => [
+                ['label' => 'Categories', 'route' => 'categories.index', 'match' => 'categories.*'],
+            ],
+        ],
     ];
 @endphp
 
