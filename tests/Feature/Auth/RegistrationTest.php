@@ -29,7 +29,7 @@ test('new users can register', function () {
     $this->assertAuthenticated();
 });
 
-test('registering creates a shop owned by the new user', function () {
+test('registering creates a shop owned by the new user with a first location', function () {
     Volt::test('pages.auth.register')
         ->set('shop_name', 'Harbour Lane Goods')
         ->set('name', 'Test User')
@@ -42,5 +42,6 @@ test('registering creates a shop owned by the new user', function () {
     $user = User::where('email', 'test@example.com')->firstOrFail();
 
     expect($user->role)->toBe(Role::Owner)
-        ->and($user->shop->name)->toBe('Harbour Lane Goods');
+        ->and($user->shop->name)->toBe('Harbour Lane Goods')
+        ->and($user->shop->locations()->sole()->is_default)->toBeTrue();
 });

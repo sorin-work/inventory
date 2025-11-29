@@ -32,6 +32,14 @@ class Shop extends Model
     }
 
     /**
+     * @return HasMany<Location, $this>
+     */
+    public function locations(): HasMany
+    {
+        return $this->hasMany(Location::class);
+    }
+
+    /**
      * @return HasMany<Category, $this>
      */
     public function categories(): HasMany
@@ -45,5 +53,10 @@ class Shop extends Model
     public function suppliers(): HasMany
     {
         return $this->hasMany(Supplier::class);
+    }
+
+    public function defaultLocation(): ?Location
+    {
+        return $this->locations()->orderByDesc('is_default')->orderBy('id')->first();
     }
 }

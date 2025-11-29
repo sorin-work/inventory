@@ -3,12 +3,14 @@
 namespace App\Actions;
 
 use App\Enums\Role;
+use App\Models\Location;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Signing up creates the shop and makes the new user its owner.
+ * Signing up creates the shop, its owner and a first stock location so the
+ * new owner can start adding products straight away.
  */
 class RegisterShop
 {
@@ -21,6 +23,13 @@ class RegisterShop
             $shop = Shop::create([
                 'name' => $data['shop_name'],
                 'currency' => $data['currency'] ?? 'USD',
+            ]);
+
+            Location::create([
+                'shop_id' => $shop->id,
+                'name' => 'Main store',
+                'code' => 'MAIN',
+                'is_default' => true,
             ]);
 
             return User::create([

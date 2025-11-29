@@ -26,6 +26,16 @@ function staff(Shop $shop): User
     return User::factory()->staff()->create(['shop_id' => $shop->id]);
 }
 
+function mainLocation(Shop $shop): Location
+{
+    return $shop->defaultLocation();
+}
+
+function otherLocation(Shop $shop, string $name = 'Back room'): Location
+{
+    return Location::factory()->create(['shop_id' => $shop->id, 'name' => $name]);
+}
+
 function supplier(Shop $shop, array $attributes = []): Supplier
 {
     return Supplier::factory()->create(['shop_id' => $shop->id, ...$attributes]);
