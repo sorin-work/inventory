@@ -26,6 +26,7 @@ new class extends Component
             'items' => [
                 ['label' => 'Suppliers', 'route' => 'suppliers.index', 'match' => 'suppliers.*'],
                 ['label' => 'Categories', 'route' => 'categories.index', 'match' => 'categories.*'],
+                ['label' => 'Locations', 'route' => 'locations.index', 'match' => 'locations.*'],
             ],
         ],
     ];
