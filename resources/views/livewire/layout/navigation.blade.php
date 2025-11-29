@@ -24,6 +24,7 @@ new class extends Component
         [
             'title' => 'Setup',
             'items' => [
+                ['label' => 'Suppliers', 'route' => 'suppliers.index', 'match' => 'suppliers.*'],
                 ['label' => 'Categories', 'route' => 'categories.index', 'match' => 'categories.*'],
             ],
         ],
