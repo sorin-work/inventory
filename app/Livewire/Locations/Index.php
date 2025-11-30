@@ -94,6 +94,12 @@ class Index extends Component
 
         $location = Location::query()->findOrFail($id);
 
+        if (Location::query()->count() === 1) {
+            $this->dispatch('notify', message: 'A shop needs at least one location.');
+
+            return;
+        }
+
         $location->delete();
 
         $this->notify("{$location->name} deleted.");

@@ -38,7 +38,9 @@
                                     @endunless
                                     <button wire:click="edit({{ $location->id }})" class="text-indigo-600 hover:underline">Edit</button>
                                     @can('manage-shop')
-                                        <button wire:click="delete({{ $location->id }})" wire:confirm="Delete {{ $location->name }}?" class="text-rose-600 hover:underline">Delete</button>
+                                        @if ($locations->count() > 1)
+                                            <button wire:click="delete({{ $location->id }})" wire:confirm="Delete {{ $location->name }}?" class="text-rose-600 hover:underline">Delete</button>
+                                        @endif
                                     @endcan
                                 </div>
                             </div>

@@ -78,3 +78,9 @@ test('adds locations and changes the default', function () {
         ->and($main->fresh()->is_default)->toBeFalse()
         ->and($this->shop->defaultLocation()->is($back))->toBeTrue();
 });
+
+test('the last location can not be deleted', function () {
+    Livewire::test(Locations\Index::class)->call('delete', mainLocation($this->shop)->id);
+
+    expect(Location::count())->toBe(1);
+});
