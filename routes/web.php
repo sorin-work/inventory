@@ -12,6 +12,9 @@ Route::middleware('auth')->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
     Route::get('products', Products\Index::class)->name('products.index');
+    Route::get('products/create', Products\Form::class)->name('products.create');
+    Route::get('products/{product}', Products\Show::class)->name('products.show');
+    Route::get('products/{product}/edit', Products\Form::class)->name('products.edit');
 
     Route::get('suppliers', Suppliers\Index::class)->name('suppliers.index');
     Route::get('suppliers/create', Suppliers\Form::class)->name('suppliers.create');
