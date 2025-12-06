@@ -1,0 +1,88 @@
+<?php
+
+use App\Livewire\Products\Form;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\Shop;
+use Livewire\Livewire;
+
+beforeEach(function () {
+    $this->shop = Shop::factory()->create();
+    $this->actingAs($this->user = owner($this->shop));
+});
+
+test('the create page renders', function () {
+    $this->get(route('products.create'))->assertOk()->assertSeeLivewire(Form::class);
+});
+
+test('creates a simple product with one variant', function () {
+    $category = Category::factory()->create(['shop_id' => $this->shop->id]);
+
+    Livewire::test(Form::class)
+        ->set('name', 'Brass pen')
+        ->set('categoryId', (string) $category->id)
+        ->set('variants.0.sku', 'pen-brass')
+        ->set('variants.0.barcode', '4006381333931')
+        ->set('variants.0.price', '32.50')
+        ->call('save')
+        ->assertHasNoErrors()
+        ->assertRedirect();
+
+    $product = Product::sole();
+    $variant = $product->variants->sole();
+
+    expect($product->name)->toBe('Brass pen')
+        ->and($product->shop_id)->toBe($this->shop->id)
+        ->and($product->category_id)->toBe($category->id)
+        ->and($product->option_names)->toBeNull()
+        ->and($variant->sku)->toBe('PEN-BRASS')
+        ->and($variant->barcode)->toBe('4006381333931')
+        ->and($variant->price_cents)->toBe(3250);
+});
+
+test('validates the product and its variants', function () {
+    variant($this->shop, ['sku' => 'TAKEN', 'barcode' => '96385074']);
+
+    Livewire::test(Form::class)
+        ->set('name', '')
+        ->set('variants.0.sku', 'taken')
+        ->set('variants.0.barcode', '96385074')
+        ->set('variants.0.price', '-1')
+        ->call('save')
+        ->assertHasErrors(['name', 'variants.0.price']);
+
+    Livewire::test(Form::class)
+        ->set('name', 'Mug')
+        ->set('variants.0.sku', 'taken')
+        ->call('save')
+        ->assertHasErrors(['variants.0.sku']);
+
+    expect(Product::count())->toBe(1);
+});
+
+test('variants on one product need their own skus', function () {
+    Livewire::test(Form::class)
+        ->set('name', 'Mug')
+        ->set('variants.0.sku', 'MUG')
+        ->call('addVariant')
+        ->set('variants.1.sku', 'mug')
+        ->call('save')
+        ->assertHasErrors(['variants.0.sku', 'variants.1.sku']);
+});
+
+test('edits a product and keeps its variant ids', function () {
+    $variant = variant($this->shop, ['sku' => 'MUG-WHITE', 'price_cents' => 2500], ['name' => 'Mug']);
+
+    Livewire::test(Form::class, ['product' => $variant->product])
+        ->assertSet('name', 'Mug')
+        ->assertSet('variants.0.price', '25.00')
+        ->set('name', 'Stoneware mug')
+        ->set('variants.0.price', '28')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect($variant->fresh()->price_cents)->toBe(2800)
+        ->and($variant->product->fresh()->name)->toBe('Stoneware mug')
+        ->and(ProductVariant::count())->toBe(1);
+});
