@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Location;
+use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Shop;
 use App\Models\Supplier;
 use App\Models\User;
@@ -34,6 +36,21 @@ function mainLocation(Shop $shop): Location
 function otherLocation(Shop $shop, string $name = 'Back room'): Location
 {
     return Location::factory()->create(['shop_id' => $shop->id, 'name' => $name]);
+}
+
+/**
+ * @param  array<string, mixed>  $variant
+ * @param  array<string, mixed>  $product
+ */
+function variant(Shop $shop, array $variant = [], array $product = []): ProductVariant
+{
+    $model = Product::factory()->create(['shop_id' => $shop->id, ...$product]);
+
+    return ProductVariant::factory()->create([
+        'shop_id' => $shop->id,
+        'product_id' => $model->id,
+        ...$variant,
+    ])->load('product');
 }
 
 function supplier(Shop $shop, array $attributes = []): Supplier
