@@ -19,6 +19,7 @@ new class extends Component
         [
             'items' => [
                 ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => 'dashboard'],
+                ['label' => 'Products', 'route' => 'products.index', 'match' => 'products.*'],
             ],
         ],
         [

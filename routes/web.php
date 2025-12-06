@@ -2,6 +2,7 @@
 
 use App\Livewire\Categories;
 use App\Livewire\Locations;
+use App\Livewire\Products;
 use App\Livewire\Suppliers;
 use Illuminate\Support\Facades\Route;
 
@@ -9,6 +10,8 @@ Route::view('/', 'welcome');
 
 Route::middleware('auth')->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
+
+    Route::get('products', Products\Index::class)->name('products.index');
 
     Route::get('suppliers', Suppliers\Index::class)->name('suppliers.index');
     Route::get('suppliers/create', Suppliers\Form::class)->name('suppliers.create');
