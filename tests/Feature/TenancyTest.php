@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Category;
+use App\Models\Product;
 use App\Models\Shop;
 use App\Models\Supplier;
 
@@ -11,14 +11,25 @@ beforeEach(function () {
 });
 
 test('queries only see the signed in shop', function () {
-    Category::factory()->create(['shop_id' => $this->mine->id, 'name' => 'Candles']);
-    Category::factory()->create(['shop_id' => $this->theirs->id, 'name' => 'Tea']);
+    variant($this->mine, [], ['name' => 'My mug']);
+    variant($this->theirs, [], ['name' => 'Their mug']);
     supplier($this->theirs);
 
     $this->actingAs($this->user);
 
-    expect(Category::pluck('name')->all())->toBe(['Candles'])
+    expect(Product::pluck('name')->all())->toBe(['My mug'])
         ->and(Supplier::count())->toBe(0);
+});
+
+test('records from another shop are not found', function () {
+    $theirs = variant($this->theirs);
+    $supplier = supplier($this->theirs);
+
+    $this->actingAs($this->user);
+
+    $this->get(route('products.show', $theirs->product_id))->assertNotFound();
+    $this->get(route('products.edit', $theirs->product_id))->assertNotFound();
+    $this->get(route('suppliers.edit', $supplier))->assertNotFound();
 });
 
 test('new records are stamped with the signed in shop', function () {
@@ -27,11 +38,4 @@ test('new records are stamped with the signed in shop', function () {
     $supplier = Supplier::create(['name' => 'Fold Paper Goods']);
 
     expect($supplier->shop_id)->toBe($this->mine->id);
-});
-
-test('without a signed in user every shop is visible', function () {
-    Category::factory()->create(['shop_id' => $this->mine->id]);
-    Category::factory()->create(['shop_id' => $this->theirs->id]);
-
-    expect(Category::count())->toBe(2);
 });
