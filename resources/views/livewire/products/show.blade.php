@@ -7,7 +7,23 @@
             @endif
         </x-slot>
         <x-slot name="actions">
+            @if ($product->isArchived())
+                <x-badge class="me-2">Archived {{ $product->archived_at->toFormattedDateString() }}</x-badge>
+            @endif
             <x-link-button variant="secondary" href="{{ route('products.edit', $product) }}">Edit</x-link-button>
+            @can('manage-shop')
+                <div x-data="{ open: false }" class="relative">
+                    <x-secondary-button @click="open = ! open" @click.outside="open = false">More</x-secondary-button>
+                    <div x-show="open" x-transition style="display: none;" class="absolute right-0 z-20 mt-1 w-48 rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+                        @if ($product->isArchived())
+                            <button wire:click="restore" class="block w-full px-3 py-2 text-left text-sm hover:bg-gray-50">Restore</button>
+                        @else
+                            <button wire:click="archive" class="block w-full px-3 py-2 text-left text-sm hover:bg-gray-50">Archive</button>
+                        @endif
+                        <button wire:click="delete" wire:confirm="Delete {{ $product->name }}? This cannot be undone." class="block w-full px-3 py-2 text-left text-sm text-rose-600 hover:bg-gray-50">Delete</button>
+                    </div>
+                </div>
+            @endcan
         </x-slot>
     </x-page-header>
 

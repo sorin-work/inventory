@@ -19,6 +19,33 @@ class Show extends Component
         $this->product = $product;
     }
 
+    public function archive(): void
+    {
+        $this->authorizeOwner();
+
+        $this->product->forceFill(['archived_at' => now()])->save();
+        $this->notify('Product archived. It no longer shows up when picking stock.');
+    }
+
+    public function restore(): void
+    {
+        $this->authorizeOwner();
+
+        $this->product->forceFill(['archived_at' => null])->save();
+        $this->notify('Product restored.');
+    }
+
+    public function delete(): void
+    {
+        $this->authorizeOwner();
+
+        $name = $this->product->name;
+        $this->product->delete();
+
+        session()->flash('status', "{$name} deleted.");
+        $this->redirectRoute('products.index', navigate: true);
+    }
+
     public function render()
     {
         $this->product->load(['variants', 'category', 'supplier']);

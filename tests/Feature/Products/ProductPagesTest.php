@@ -1,7 +1,9 @@
 <?php
 
 use App\Livewire\Products\Index;
+use App\Livewire\Products\Show;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Shop;
 use Livewire\Livewire;
 
@@ -39,4 +41,22 @@ test('filters by category and archived', function () {
         ->assertDontSee('Old stock')
         ->set('categoryId', (string) $candles->id)->assertSee('Fig candle')->assertDontSee('Brass pen')
         ->set('categoryId', '')->set('status', 'archived')->assertSee('Old stock')->assertDontSee('Fig candle');
+});
+
+test('owners can archive and restore products', function () {
+    $variant = variant($this->shop);
+
+    Livewire::test(Show::class, ['product' => $variant->product])->call('archive');
+    expect($variant->product->fresh()->isArchived())->toBeTrue();
+
+    Livewire::test(Show::class, ['product' => $variant->product->fresh()])->call('restore');
+    expect($variant->product->fresh()->isArchived())->toBeFalse();
+});
+
+test('owners can delete products', function () {
+    $variant = variant($this->shop);
+
+    Livewire::test(Show::class, ['product' => $variant->product])->call('delete')->assertRedirect(route('products.index'));
+
+    expect(Product::count())->toBe(0);
 });
