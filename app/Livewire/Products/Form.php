@@ -12,6 +12,7 @@ use App\Support\Money;
 use App\Support\Sku;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -103,6 +104,51 @@ class Form extends Component
         }
     }
 
+    /**
+     * Builds one variant for every combination of option values, keeping the
+     * rows (and their SKUs) that already exist.
+     */
+    public function generateVariants(): void
+    {
+        $lists = array_map(fn ($option) => $this->splitValues($option['values']), $this->options);
+
+        if ($lists === [] || in_array([], $lists, true)) {
+            $this->addError('options', 'Give every option at least one value, separated by commas.');
+
+            return;
+        }
+
+        $combinations = [[]];
+
+        foreach ($lists as $values) {
+            $next = [];
+
+            foreach ($combinations as $combination) {
+                foreach ($values as $value) {
+                    $next[] = [...$combination, $value];
+                }
+            }
+
+            $combinations = $next;
+        }
+
+        $existing = collect($this->variants)->keyBy(fn ($v) => Str::lower(implode('|', $v['values'])));
+        $template = $this->variants[0] ?? $this->blankVariant();
+
+        $this->variants = array_map(function (array $values) use ($existing, $template) {
+            $key = Str::lower(implode('|', $values));
+
+            return $existing[$key] ?? [
+                ...$this->blankVariant(),
+                'values' => $values,
+                'sku' => $this->name !== '' ? Sku::suggest($this->name, $values) : '',
+                'price' => $template['price'],
+            ];
+        }, $combinations);
+
+        $this->resetErrorBag('options');
+    }
+
     public function addVariant(): void
     {
         $this->variants[] = [
@@ -115,6 +161,15 @@ class Form extends Component
     {
         unset($this->variants[$index]);
         $this->variants = array_values($this->variants);
+    }
+
+    public function suggestSku(int $index): void
+    {
+        if ($this->name === '') {
+            return;
+        }
+
+        $this->variants[$index]['sku'] = Sku::suggest($this->name, $this->variants[$index]['values'] ?? []);
     }
 
     public function save(): void
@@ -257,6 +312,19 @@ class Form extends Component
                 $this->addError("variants.{$i}.barcode", 'This barcode is already used by another product.');
             }
         }
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function splitValues(string $values): array
+    {
+        return collect(preg_split('/\s*,\s*/', trim($values)))
+            ->map(fn ($v) => trim($v))
+            ->filter()
+            ->unique(fn ($v) => Str::lower($v))
+            ->values()
+            ->all();
     }
 
     /**

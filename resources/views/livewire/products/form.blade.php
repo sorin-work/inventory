@@ -68,6 +68,10 @@
                             <button type="button" wire:click="removeOption({{ $i }})" class="text-sm text-rose-600 hover:underline">Remove</button>
                         </div>
                     @endforeach
+                    <div class="flex items-center gap-3">
+                        <x-secondary-button wire:click="generateVariants">Create variants from options</x-secondary-button>
+                        <span class="text-xs text-gray-500">Keeps variants you already have.</span>
+                    </div>
                     <x-input-error :messages="$errors->get('options')" />
                 </div>
             @endif
@@ -101,7 +105,12 @@
                                     </td>
                                 @endforeach
                                 <td class="px-2 py-2">
-                                    <x-text-input wire:model="variants.{{ $i }}.sku" class="w-44 uppercase" />
+                                    <div class="flex items-center gap-1">
+                                        <x-text-input wire:model="variants.{{ $i }}.sku" class="w-44 uppercase" />
+                                        @if ($variant['sku'] === '')
+                                            <button type="button" wire:click="suggestSku({{ $i }})" class="text-xs text-indigo-600 hover:underline" title="Suggest from the name">Suggest</button>
+                                        @endif
+                                    </div>
                                     <x-input-error :messages="$errors->get('variants.'.$i.'.sku')" class="mt-1 max-w-xs" />
                                 </td>
                                 <td class="px-2 py-2">
