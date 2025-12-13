@@ -176,7 +176,7 @@ class Form extends Component
     {
         foreach ($this->variants as $i => $variant) {
             $this->variants[$i]['sku'] = Sku::normalize($variant['sku']);
-            $this->variants[$i]['barcode'] = trim($variant['barcode']);
+            $this->variants[$i]['barcode'] = (string) Barcode::normalize($variant['barcode']);
         }
 
         $this->validate($this->rules(), $this->messages(), $this->attributes());
@@ -308,7 +308,9 @@ class Form extends Component
                 continue;
             }
 
-            if (in_array($variant['barcode'], $takenBarcodes, true)) {
+            if (! Barcode::isValid($variant['barcode'])) {
+                $this->addError("variants.{$i}.barcode", 'This barcode is not valid. Check the last digit.');
+            } elseif (in_array($variant['barcode'], $takenBarcodes, true)) {
                 $this->addError("variants.{$i}.barcode", 'This barcode is already used by another product.');
             }
         }

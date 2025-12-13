@@ -90,8 +90,9 @@ test('validates the product and its variants', function () {
     Livewire::test(Form::class)
         ->set('name', 'Mug')
         ->set('variants.0.sku', 'taken')
+        ->set('variants.0.barcode', '4006381333932')
         ->call('save')
-        ->assertHasErrors(['variants.0.sku']);
+        ->assertHasErrors(['variants.0.sku', 'variants.0.barcode']);
 
     expect(Product::count())->toBe(1);
 });
