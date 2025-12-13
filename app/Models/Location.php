@@ -6,6 +6,7 @@ use App\Models\Concerns\BelongsToShop;
 use Database\Factories\LocationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Location extends Model
 {
@@ -19,6 +20,22 @@ class Location extends Model
         return [
             'is_default' => 'boolean',
         ];
+    }
+
+    /**
+     * @return HasMany<StockLevel, $this>
+     */
+    public function stockLevels(): HasMany
+    {
+        return $this->hasMany(StockLevel::class);
+    }
+
+    /**
+     * @return HasMany<StockMovement, $this>
+     */
+    public function movements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class);
     }
 
     public function makeDefault(): void

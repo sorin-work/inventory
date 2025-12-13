@@ -3,12 +3,17 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToShop;
+use App\Support\AverageCost;
 use Database\Factories\ProductVariantFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int|null $on_hand loaded with withOnHand()
+ */
 class ProductVariant extends Model
 {
     /** @use HasFactory<ProductVariantFactory> */
@@ -43,6 +48,30 @@ class ProductVariant extends Model
     }
 
     /**
+     * @return HasMany<StockLevel, $this>
+     */
+    public function stockLevels(): HasMany
+    {
+        return $this->hasMany(StockLevel::class);
+    }
+
+    /**
+     * @return HasMany<StockMovement, $this>
+     */
+    public function movements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    /**
+     * @param  Builder<ProductVariant>  $query
+     */
+    public function scopeWithOnHand(Builder $query): void
+    {
+        $query->withSum('stockLevels as on_hand', 'quantity');
+    }
+
+    /**
      * @param  Builder<ProductVariant>  $query
      */
     public function scopeSearch(Builder $query, ?string $term): void
@@ -72,5 +101,24 @@ class ProductVariant extends Model
         $options = $this->optionLabel();
 
         return $options === '' ? $this->product->name : $this->product->name.' — '.$options;
+    }
+
+    public function onHand(): int
+    {
+        if (array_key_exists('on_hand', $this->attributes)) {
+            return (int) $this->attributes['on_hand'];
+        }
+
+        return (int) $this->stockLevels()->sum('quantity');
+    }
+
+    public function quantityAt(Location $location): int
+    {
+        return (int) $this->stockLevels()->where('location_id', $location->id)->value('quantity');
+    }
+
+    public function stockValue(): int
+    {
+        return AverageCost::value($this->onHand(), $this->average_cost);
     }
 }
