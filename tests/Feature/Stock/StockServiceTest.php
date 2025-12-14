@@ -85,6 +85,22 @@ test('adjustments cannot take stock below zero or change nothing', function () {
         ->toThrow(StockException::class, 'nothing to adjust');
 });
 
+test('a stock count records the difference to what was on hand', function () {
+    $this->stock->receive($this->variant, $this->main, 12, 300);
+
+    $movement = $this->stock->recordCount($this->variant, $this->main, 9);
+
+    expect($movement->quantity)->toBe(-3)
+        ->and($movement->reason)->toBe(AdjustmentReason::StockCount)
+        ->and($movement->balance_after)->toBe(9);
+});
+
+test('a count that matches is refused', function () {
+    $this->stock->receive($this->variant, $this->main, 4, 300);
+
+    $this->stock->recordCount($this->variant, $this->main, 4);
+})->throws(StockException::class, 'matches');
+
 test('transfers move stock between locations as a pair of movements', function () {
     $this->stock->receive($this->variant, $this->back, 10, 300);
 

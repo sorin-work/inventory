@@ -89,6 +89,25 @@ class StockService
     }
 
     /**
+     * Sets the quantity at a location to what was counted on the shelf.
+     */
+    public function recordCount(
+        ProductVariant $variant,
+        Location $location,
+        int $counted,
+        ?User $user = null,
+        ?string $note = null,
+    ): StockMovement {
+        if ($counted < 0) {
+            throw new StockException('A counted quantity cannot be negative.');
+        }
+
+        $current = $variant->quantityAt($location);
+
+        return $this->adjust($variant, $location, $counted - $current, AdjustmentReason::StockCount, $user, $note);
+    }
+
+    /**
      * @return array{0: StockMovement, 1: StockMovement} the outgoing and incoming movements
      */
     public function transfer(
