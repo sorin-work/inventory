@@ -32,4 +32,9 @@ class StockException extends DomainException
     {
         return new self('The counted quantity matches what is on hand, nothing to adjust.');
     }
+
+    public static function sameLocation(): self
+    {
+        return new self('Pick two different locations to transfer between.');
+    }
 }

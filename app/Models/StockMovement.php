@@ -66,4 +66,19 @@ class StockMovement extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * The other half of a transfer.
+     */
+    public function counterpart(): ?self
+    {
+        if ($this->transfer_id === null) {
+            return null;
+        }
+
+        return static::query()
+            ->where('transfer_id', $this->transfer_id)
+            ->whereKeyNot($this->getKey())
+            ->first();
+    }
 }

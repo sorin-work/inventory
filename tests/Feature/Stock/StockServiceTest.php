@@ -84,3 +84,28 @@ test('adjustments cannot take stock below zero or change nothing', function () {
         ->and(fn () => $this->stock->adjust($this->variant, $this->main, 0, AdjustmentReason::Lost))
         ->toThrow(StockException::class, 'nothing to adjust');
 });
+
+test('transfers move stock between locations as a pair of movements', function () {
+    $this->stock->receive($this->variant, $this->back, 10, 300);
+
+    [$out, $in] = $this->stock->transfer($this->variant, $this->back, $this->main, 4);
+
+    expect($out->type)->toBe(MovementType::TransferOut)
+        ->and($out->quantity)->toBe(-4)
+        ->and($out->balance_after)->toBe(6)
+        ->and($in->type)->toBe(MovementType::TransferIn)
+        ->and($in->quantity)->toBe(4)
+        ->and($in->balance_after)->toBe(4)
+        ->and($out->transfer_id)->toBe($in->transfer_id)
+        ->and($out->counterpart()->is($in))->toBeTrue()
+        ->and($this->variant->fresh()->onHand())->toBe(10);
+});
+
+test('transfers need two different locations and enough stock', function () {
+    $this->stock->receive($this->variant, $this->main, 3, 300);
+
+    expect(fn () => $this->stock->transfer($this->variant, $this->main, $this->main, 1))
+        ->toThrow(StockException::class, 'different locations')
+        ->and(fn () => $this->stock->transfer($this->variant, $this->main, $this->back, 4))
+        ->toThrow(StockException::class, 'Only 3');
+});

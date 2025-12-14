@@ -12,6 +12,7 @@ use App\Models\StockMovement;
 use App\Models\User;
 use App\Support\AverageCost;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Every change to stock goes through here so that stock levels, the ledger
@@ -84,6 +85,60 @@ class StockService
                 'reason' => $reason,
                 'note' => $note,
             ]);
+        });
+    }
+
+    /**
+     * @return array{0: StockMovement, 1: StockMovement} the outgoing and incoming movements
+     */
+    public function transfer(
+        ProductVariant $variant,
+        Location $from,
+        Location $to,
+        int $quantity,
+        ?User $user = null,
+        ?string $note = null,
+    ): array {
+        if ($from->is($to)) {
+            throw StockException::sameLocation();
+        }
+
+        $this->guard($variant, $from, $quantity);
+        $this->guard($variant, $to, $quantity);
+
+        return DB::transaction(function () use ($variant, $from, $to, $quantity, $user, $note) {
+            $locked = $this->lockVariant($variant);
+
+            // Lock both levels in id order so two opposite transfers can't
+            // deadlock each other.
+            $levels = collect([$from, $to])
+                ->sortBy('id')
+                ->mapWithKeys(fn (Location $location) => [$location->id => $this->lockLevel($locked, $location)]);
+
+            $source = $levels[$from->id];
+            $target = $levels[$to->id];
+
+            if ($source->quantity < $quantity) {
+                throw StockException::insufficient($locked, $from, $source->quantity, $quantity);
+            }
+
+            $source->quantity -= $quantity;
+            $source->save();
+            $target->quantity += $quantity;
+            $target->save();
+
+            $transferId = (string) Str::uuid();
+            $shared = [
+                'user_id' => $user?->id,
+                'unit_cost' => $locked->average_cost,
+                'note' => $note,
+                'transfer_id' => $transferId,
+            ];
+
+            return [
+                $this->record($locked, $from, MovementType::TransferOut, -$quantity, $source->quantity, $shared),
+                $this->record($locked, $to, MovementType::TransferIn, $quantity, $target->quantity, $shared),
+            ];
         });
     }
 
