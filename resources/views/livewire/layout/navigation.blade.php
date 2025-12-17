@@ -23,6 +23,12 @@ new class extends Component
             ],
         ],
         [
+            'title' => 'Stock',
+            'items' => [
+                ['label' => 'Receive', 'route' => 'stock.receive', 'match' => 'stock.receive'],
+            ],
+        ],
+        [
             'title' => 'Setup',
             'items' => [
                 ['label' => 'Suppliers', 'route' => 'suppliers.index', 'match' => 'suppliers.*'],

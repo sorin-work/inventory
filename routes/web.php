@@ -3,6 +3,7 @@
 use App\Livewire\Categories;
 use App\Livewire\Locations;
 use App\Livewire\Products;
+use App\Livewire\Stock;
 use App\Livewire\Suppliers;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,8 @@ Route::middleware('auth')->group(function () {
     Route::get('products/create', Products\Form::class)->name('products.create');
     Route::get('products/{product}', Products\Show::class)->name('products.show');
     Route::get('products/{product}/edit', Products\Form::class)->name('products.edit');
+
+    Route::get('stock/receive', Stock\Receive::class)->name('stock.receive');
 
     Route::get('suppliers', Suppliers\Index::class)->name('suppliers.index');
     Route::get('suppliers/create', Suppliers\Form::class)->name('suppliers.create');
