@@ -26,6 +26,7 @@ new class extends Component
             'title' => 'Stock',
             'items' => [
                 ['label' => 'Receive', 'route' => 'stock.receive', 'match' => 'stock.receive'],
+                ['label' => 'Sell', 'route' => 'stock.sell', 'match' => 'stock.sell'],
             ],
         ],
         [
