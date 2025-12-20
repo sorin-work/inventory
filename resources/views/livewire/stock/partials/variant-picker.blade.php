@@ -18,9 +18,10 @@
                 id="search"
                 type="search"
                 class="block w-full"
-                placeholder="Search by name or SKU"
+                placeholder="Scan a barcode or search by name or SKU"
                 autocomplete="off"
                 wire:model.live.debounce.250ms="search"
+                wire:keydown.enter.prevent="pickFirstMatch"
             />
 
             @php $matches = $this->variantMatches(); @endphp

@@ -72,6 +72,20 @@ class ProductVariant extends Model
     }
 
     /**
+     * Finds a variant by exact SKU or barcode, which is what a scanner types.
+     *
+     * @param  Builder<ProductVariant>  $query
+     */
+    public function scopeWhereCode(Builder $query, string $code): void
+    {
+        $code = trim($code);
+
+        $query->where(function (Builder $q) use ($code) {
+            $q->where('sku', strtoupper($code))->orWhere('barcode', $code);
+        });
+    }
+
+    /**
      * @param  Builder<ProductVariant>  $query
      */
     public function scopeSearch(Builder $query, ?string $term): void
