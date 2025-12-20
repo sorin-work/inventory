@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('stock/receive', Stock\Receive::class)->name('stock.receive');
     Route::get('stock/sell', Stock\Sell::class)->name('stock.sell');
+    Route::get('stock/adjust', Stock\Adjust::class)->name('stock.adjust');
 
     Route::get('suppliers', Suppliers\Index::class)->name('suppliers.index');
     Route::get('suppliers/create', Suppliers\Form::class)->name('suppliers.create');
