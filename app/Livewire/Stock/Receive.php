@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Stock;
 
+use App\Enums\MovementType;
 use App\Models\ProductVariant;
 use App\Services\StockService;
 use App\Support\Money;
@@ -47,6 +48,11 @@ class Receive extends StockForm
             $this->notify("Received {$this->quantity} × {$variant->sku} into {$location->name}.");
             $this->reset('quantity', 'note', 'variantId', 'unitCost');
         }
+    }
+
+    protected function recentTypes(): array
+    {
+        return [MovementType::Receipt->value];
     }
 
     public function render()

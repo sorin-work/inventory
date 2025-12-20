@@ -3,6 +3,7 @@
 namespace App\Livewire\Stock;
 
 use App\Enums\AdjustmentReason;
+use App\Enums\MovementType;
 use App\Services\StockService;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
@@ -67,6 +68,11 @@ class Adjust extends StockForm
     public function reasons(): array
     {
         return collect(AdjustmentReason::options())->except(AdjustmentReason::StockCount->value)->all();
+    }
+
+    protected function recentTypes(): array
+    {
+        return [MovementType::Adjustment->value];
     }
 
     public function render()

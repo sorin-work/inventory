@@ -25,5 +25,7 @@
                 </div>
             </form>
         </x-card>
+
+        @include('livewire.stock.partials.recent')
     </div>
 </div>

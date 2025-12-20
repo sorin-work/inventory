@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Stock;
 
+use App\Enums\MovementType;
 use App\Services\StockService;
 use Livewire\Attributes\Title;
 
@@ -49,6 +50,11 @@ class Transfer extends StockForm
             $this->notify("Moved {$this->quantity} × {$variant->sku} from {$from->name} to {$to->name}.");
             $this->reset('quantity', 'note', 'variantId');
         }
+    }
+
+    protected function recentTypes(): array
+    {
+        return [MovementType::TransferOut->value];
     }
 
     public function render()

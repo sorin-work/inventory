@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Stock;
 
+use App\Enums\MovementType;
 use App\Models\ProductVariant;
 use App\Services\StockService;
 use App\Support\Money;
@@ -47,6 +48,11 @@ class Sell extends StockForm
             $this->notify("Sold {$this->quantity} × {$variant->sku} from {$location->name}.");
             $this->reset('quantity', 'note', 'variantId', 'unitPrice');
         }
+    }
+
+    protected function recentTypes(): array
+    {
+        return [MovementType::Sale->value];
     }
 
     public function render()

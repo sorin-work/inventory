@@ -7,6 +7,7 @@ use App\Livewire\Concerns\PicksVariant;
 use App\Livewire\Concerns\WithShop;
 use App\Models\Location;
 use App\Models\ProductVariant;
+use App\Models\StockMovement;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -35,6 +36,25 @@ abstract class StockForm extends Component
     {
         return Location::query()->orderByDesc('is_default')->orderBy('name')->get();
     }
+
+    /**
+     * @return Collection<int, StockMovement>
+     */
+    public function recent(): Collection
+    {
+        return StockMovement::query()
+            ->with('variant.product', 'location')
+            ->whereIn('type', $this->recentTypes())
+            ->where('user_id', $this->user()->id)
+            ->orderByDesc('created_at')->orderByDesc('id')
+            ->limit(5)
+            ->get();
+    }
+
+    /**
+     * @return list<string>
+     */
+    abstract protected function recentTypes(): array;
 
     protected function location(?int $id = null): Location
     {
