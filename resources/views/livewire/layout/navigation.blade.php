@@ -28,6 +28,7 @@ new class extends Component
                 ['label' => 'Receive', 'route' => 'stock.receive', 'match' => 'stock.receive'],
                 ['label' => 'Sell', 'route' => 'stock.sell', 'match' => 'stock.sell'],
                 ['label' => 'Adjust or count', 'route' => 'stock.adjust', 'match' => 'stock.adjust'],
+                ['label' => 'Transfer', 'route' => 'stock.transfer', 'match' => 'stock.transfer'],
             ],
         ],
         [
