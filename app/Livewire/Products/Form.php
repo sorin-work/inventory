@@ -159,6 +159,14 @@ class Form extends Component
 
     public function removeVariant(int $index): void
     {
+        $id = $this->variants[$index]['id'] ?? null;
+
+        if ($id !== null && ! $this->canDeleteVariant($id)) {
+            $this->addError("variants.{$index}.sku", 'This variant has stock history and cannot be removed. Archive the product instead.');
+
+            return;
+        }
+
         unset($this->variants[$index]);
         $this->variants = array_values($this->variants);
     }
@@ -215,7 +223,11 @@ class Form extends Component
                 $keep[] = $variant->id;
             }
 
-            $product->variants()->whereNotIn('id', $keep)->delete();
+            // Rows removed from the form. removeVariant() already refused the
+            // ones with history, so these are safe to delete.
+            $product->variants()->whereNotIn('id', $keep)->get()
+                ->filter(fn (ProductVariant $v) => $this->canDeleteVariant($v->id))
+                ->each->delete();
 
             return $product;
         });
@@ -314,6 +326,17 @@ class Form extends Component
                 $this->addError("variants.{$i}.barcode", 'This barcode is already used by another product.');
             }
         }
+    }
+
+    protected function canDeleteVariant(int $id): bool
+    {
+        $variant = ProductVariant::query()->find($id);
+
+        if ($variant === null) {
+            return true;
+        }
+
+        return ! $variant->movements()->exists();
     }
 
     /**

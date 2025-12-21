@@ -5,6 +5,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Shop;
+use App\Services\StockService;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -121,6 +122,21 @@ test('edits a product and keeps its variant ids', function () {
     expect($variant->fresh()->price_cents)->toBe(2800)
         ->and($variant->product->fresh()->name)->toBe('Stoneware mug')
         ->and(ProductVariant::count())->toBe(1);
+});
+
+test('variants with stock history can not be removed', function () {
+    $variant = variant($this->shop, ['sku' => 'MUG-WHITE']);
+    $product = $variant->product;
+    ProductVariant::factory()->create(['shop_id' => $this->shop->id, 'product_id' => $product->id, 'sku' => 'MUG-GREEN']);
+    app(StockService::class)->receive($variant, mainLocation($this->shop), 1, 100);
+
+    Livewire::test(Form::class, ['product' => $product])
+        ->call('removeVariant', 0)
+        ->assertHasErrors('variants.0.sku')
+        ->call('removeVariant', 1)
+        ->call('save');
+
+    expect($product->variants()->pluck('sku')->all())->toBe(['MUG-WHITE']);
 });
 
 test('suggests a sku from the name', function () {
