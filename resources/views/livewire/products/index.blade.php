@@ -49,6 +49,7 @@
                             <x-th>Category</x-th>
                             <x-th>Supplier</x-th>
                             <x-th align="right">Price</x-th>
+                            <x-th align="right">On hand</x-th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
@@ -80,6 +81,10 @@
                                     @else
                                         {{ $this->money($prices->min()) }}–{{ $this->money($prices->max()) }}
                                     @endif
+                                </x-td>
+                                <x-td align="right" class="tabular-nums">
+                                    <span class="font-medium text-gray-900">{{ number_format($product->on_hand) }}</span>
+                                    <span class="text-xs text-gray-500">{{ $product->unit }}</span>
                                 </x-td>
                             </tr>
                         @endforeach

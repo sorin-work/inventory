@@ -9,6 +9,7 @@ use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -43,9 +44,15 @@ class Index extends Component
 
     public function products(): LengthAwarePaginator
     {
+        $onHand = DB::table('stock_levels')
+            ->join('product_variants', 'product_variants.id', '=', 'stock_levels.product_variant_id')
+            ->whereColumn('product_variants.product_id', 'products.id')
+            ->selectRaw('COALESCE(SUM(stock_levels.quantity), 0)');
+
         $query = Product::query()
             ->with(['category', 'supplier', 'variants'])
             ->withCount('variants')
+            ->addSelect(['on_hand' => $onHand])
             ->when($this->search !== '', function (Builder $q) {
                 $like = '%'.trim($this->search).'%';
 

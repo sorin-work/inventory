@@ -5,15 +5,18 @@ use App\Livewire\Products\Show;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Shop;
+use App\Services\StockService;
 use Livewire\Livewire;
 
 beforeEach(function () {
     $this->shop = Shop::factory()->create();
     $this->actingAs($this->user = owner($this->shop));
+    $this->stock = app(StockService::class);
 });
 
-test('lists products', function () {
-    variant($this->shop, ['sku' => 'MUG-1'], ['name' => 'Stoneware mug']);
+test('lists products with their stock', function () {
+    $mug = variant($this->shop, ['sku' => 'MUG-1'], ['name' => 'Stoneware mug']);
+    $this->stock->receive($mug, mainLocation($this->shop), 7, 1000);
 
     $this->get(route('products.index'))
         ->assertOk()
@@ -43,6 +46,20 @@ test('filters by category and archived', function () {
         ->set('categoryId', '')->set('status', 'archived')->assertSee('Old stock')->assertDontSee('Fig candle');
 });
 
+test('the product page shows stock per location and the ledger', function () {
+    $variant = variant($this->shop, [], ['name' => 'Stoneware mug']);
+    $back = otherLocation($this->shop, 'Back room');
+    $this->stock->receive($variant, $back, 12, 1150, $this->user, 'First delivery');
+    $this->stock->transfer($variant, $back, mainLocation($this->shop), 5, $this->user);
+
+    $this->get(route('products.show', $variant->product))
+        ->assertOk()
+        ->assertSee('Back room')
+        ->assertSee('Transfer out')
+        ->assertSee('First delivery')
+        ->assertSee('$138.00'); // 12 x $11.50
+});
+
 test('owners can archive and restore products', function () {
     $variant = variant($this->shop);
 
@@ -53,10 +70,13 @@ test('owners can archive and restore products', function () {
     expect($variant->product->fresh()->isArchived())->toBeFalse();
 });
 
-test('owners can delete products', function () {
-    $variant = variant($this->shop);
+test('products without history can be deleted, others can not', function () {
+    $unused = variant($this->shop);
+    $used = variant($this->shop);
+    $this->stock->receive($used, mainLocation($this->shop), 1, 100);
 
-    Livewire::test(Show::class, ['product' => $variant->product])->call('delete')->assertRedirect(route('products.index'));
+    Livewire::test(Show::class, ['product' => $used->product])->call('delete')->assertNoRedirect();
+    Livewire::test(Show::class, ['product' => $unused->product])->call('delete')->assertRedirect(route('products.index'));
 
-    expect(Product::count())->toBe(0);
+    expect(Product::pluck('id')->all())->toBe([$used->product_id]);
 });
