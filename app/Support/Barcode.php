@@ -32,17 +32,19 @@ final class Barcode
     }
 
     /**
-     * GTIN check digit: digits are weighted 1, 3, 1, 3... and the check
-     * digit brings the sum up to a multiple of ten.
+     * GTIN check digit: from the right, excluding the check digit itself,
+     * digits are weighted 3, 1, 3, 1...
      */
     public static function hasValidCheckDigit(string $digits): bool
     {
         $body = substr($digits, 0, -1);
         $check = (int) substr($digits, -1);
         $sum = 0;
+        $weight = 3;
 
-        for ($i = 0; $i < strlen($body); $i++) {
-            $sum += (int) $body[$i] * ($i % 2 === 0 ? 1 : 3);
+        for ($i = strlen($body) - 1; $i >= 0; $i--) {
+            $sum += (int) $body[$i] * $weight;
+            $weight = $weight === 3 ? 1 : 3;
         }
 
         return (10 - ($sum % 10)) % 10 === $check;
