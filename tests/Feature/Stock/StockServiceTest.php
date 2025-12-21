@@ -30,6 +30,14 @@ test('receiving adds stock, records the movement and sets the cost', function ()
         ->and($this->variant->fresh()->average_cost)->toBe(450.0);
 });
 
+test('receipts update the weighted average cost across all locations', function () {
+    $this->stock->receive($this->variant, $this->main, 10, 500);
+    $this->stock->receive($this->variant, $this->back, 30, 700);
+
+    expect($this->variant->fresh()->average_cost)->toBe(650.0)
+        ->and($this->variant->fresh()->onHand())->toBe(40);
+});
+
 test('the average starts over once stock has run out', function () {
     $this->stock->receive($this->variant, $this->main, 5, 500);
     $this->stock->sell($this->variant, $this->main, 5);

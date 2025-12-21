@@ -32,12 +32,13 @@ class StockService
 
         return DB::transaction(function () use ($variant, $location, $quantity, $unitCost, $user, $note) {
             $locked = $this->lockVariant($variant);
-            $level = $this->lockLevel($locked, $location);
+            $onHand = (int) StockLevel::query()->where('product_variant_id', $locked->id)->sum('quantity');
 
-            $locked->average_cost = AverageCost::afterReceipt($level->quantity, $locked->average_cost, $quantity, $unitCost);
+            $locked->average_cost = AverageCost::afterReceipt($onHand, $locked->average_cost, $quantity, $unitCost);
             $locked->save();
             $variant->average_cost = $locked->average_cost;
 
+            $level = $this->lockLevel($locked, $location);
             $level->quantity += $quantity;
             $level->save();
 
