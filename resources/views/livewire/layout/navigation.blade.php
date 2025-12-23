@@ -29,6 +29,7 @@ new class extends Component
                 ['label' => 'Sell', 'route' => 'stock.sell', 'match' => 'stock.sell'],
                 ['label' => 'Adjust or count', 'route' => 'stock.adjust', 'match' => 'stock.adjust'],
                 ['label' => 'Transfer', 'route' => 'stock.transfer', 'match' => 'stock.transfer'],
+                ['label' => 'Movement ledger', 'route' => 'movements.index', 'match' => 'movements.*'],
             ],
         ],
         [

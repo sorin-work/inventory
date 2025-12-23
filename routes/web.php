@@ -2,6 +2,7 @@
 
 use App\Livewire\Categories;
 use App\Livewire\Locations;
+use App\Livewire\Movements;
 use App\Livewire\Products;
 use App\Livewire\Stock;
 use App\Livewire\Suppliers;
@@ -21,6 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::get('stock/sell', Stock\Sell::class)->name('stock.sell');
     Route::get('stock/adjust', Stock\Adjust::class)->name('stock.adjust');
     Route::get('stock/transfer', Stock\Transfer::class)->name('stock.transfer');
+
+    Route::get('movements', Movements\Index::class)->name('movements.index');
 
     Route::get('suppliers', Suppliers\Index::class)->name('suppliers.index');
     Route::get('suppliers/create', Suppliers\Form::class)->name('suppliers.create');
