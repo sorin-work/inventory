@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Categories;
+use App\Livewire\Dashboard;
 use App\Livewire\Locations;
 use App\Livewire\Movements;
 use App\Livewire\Products;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'welcome');
 
 Route::middleware('auth')->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', Dashboard::class)->name('dashboard');
 
     Route::get('products', Products\Index::class)->name('products.index');
     Route::get('products/create', Products\Form::class)->name('products.create');
