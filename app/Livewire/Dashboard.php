@@ -27,7 +27,7 @@ class Dashboard extends Component
                 ->join('stock_levels', 'stock_levels.product_variant_id', '=', 'product_variants.id')
                 ->where('stock_levels.quantity', '>', 0)
                 ->sum('stock_levels.quantity'),
-            'sold_30d' => (int) StockMovement::query()
+            'sold_30d' => (int) -StockMovement::query()
                 ->where('type', 'sale')
                 ->where('created_at', '>=', now()->subDays(30))
                 ->sum('quantity'),
