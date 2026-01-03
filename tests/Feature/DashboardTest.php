@@ -38,3 +38,13 @@ test('the movement ledger filters by type, location and date', function () {
         ->set('type', '')->set('location', (string) $main->id)->assertSee('Fresh transfer')->assertDontSee('Old delivery')
         ->set('location', '')->set('from', today()->subDay()->toDateString())->assertDontSee('Old delivery');
 });
+
+test('filtering the ledger up to a date includes that whole day', function () {
+    $variant = variant($this->shop);
+    $this->travelTo(today()->setTime(18, 30));
+    $this->stock->receive($variant, mainLocation($this->shop), 1, 100, null, 'Evening delivery');
+
+    Livewire::test(Index::class)
+        ->set('to', today()->toDateString())
+        ->assertSee('Evening delivery');
+});
