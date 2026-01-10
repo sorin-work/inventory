@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('movements', Movements\Index::class)->name('movements.index');
 
+    Route::get('purchase-orders', PurchaseOrders\Index::class)->name('purchase-orders.index');
     Route::get('purchase-orders/create', PurchaseOrders\Form::class)->name('purchase-orders.create');
     Route::get('purchase-orders/{purchaseOrder}', PurchaseOrders\Show::class)->name('purchase-orders.show');
     Route::get('purchase-orders/{purchaseOrder}/edit', PurchaseOrders\Form::class)->name('purchase-orders.edit');
