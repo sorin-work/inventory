@@ -71,6 +71,14 @@ class Shop extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    /**
+     * @return HasMany<PurchaseOrder, $this>
+     */
+    public function purchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
     public function defaultLocation(): ?Location
     {
         return $this->locations()->orderByDesc('is_default')->orderBy('id')->first();
