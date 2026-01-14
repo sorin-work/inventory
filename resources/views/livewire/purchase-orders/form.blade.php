@@ -9,7 +9,7 @@
         <x-card title="Order">
             <div class="grid gap-4 sm:grid-cols-3">
                 <x-field label="Supplier" for="supplierId" error="supplierId">
-                    <x-select id="supplierId" wire:model="supplierId" class="block w-full">
+                    <x-select id="supplierId" wire:model.live="supplierId" class="block w-full">
                         <option value="">Choose a supplier…</option>
                         @foreach ($this->suppliers() as $supplier)
                             <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>

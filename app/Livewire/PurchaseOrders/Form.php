@@ -56,6 +56,15 @@ class Form extends Component
         $this->locationId = (string) $this->shop()->defaultLocation()?->id;
     }
 
+    public function updatedSupplierId(): void
+    {
+        $supplier = Supplier::query()->find($this->supplierId);
+
+        if ($supplier?->lead_time_days && $this->expectedOn === '') {
+            $this->expectedOn = today()->addDays($supplier->lead_time_days)->toDateString();
+        }
+    }
+
     protected function variantSelected(ProductVariant $variant): void
     {
         $existing = collect($this->lines)->search(fn ($line) => $line['product_variant_id'] === $variant->id);
