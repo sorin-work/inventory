@@ -1,6 +1,7 @@
 @php
     $locations = $this->locations();
     $matrix = $this->matrix();
+    $onOrder = $this->onOrder();
     $isOwner = auth()->user()->isOwner();
 @endphp
 
@@ -35,8 +36,9 @@
         </x-slot>
     </x-page-header>
 
-    <dl class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-3">
+    <dl class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <x-stat label="On hand" :value="number_format($product->variants->sum(fn ($v) => array_sum($matrix[$v->id] ?? []))).' '.$product->unit" />
+        <x-stat label="On order" :value="number_format(array_sum($onOrder))" />
         <x-stat label="Stock value" :value="$this->money($this->stockValue())" hint="At average cost" />
         <x-stat label="Supplier" :value="$product->supplier?->name ?? '—'" />
     </dl>
@@ -73,6 +75,9 @@
                             @endforeach
                             <x-td align="right" class="tabular-nums">
                                 <span class="font-semibold">{{ $total }}</span>
+                                @if (($onOrder[$variant->id] ?? 0) > 0)
+                                    <div class="text-xs text-sky-700">+{{ $onOrder[$variant->id] }} on order</div>
+                                @endif
                             </x-td>
                             <x-td align="right" class="tabular-nums text-gray-700">{{ $this->money($variant->price_cents) }}</x-td>
                             <x-td align="right" class="tabular-nums text-gray-700">{{ $this->money($variant->average_cost) }}</x-td>

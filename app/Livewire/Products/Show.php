@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Products;
 
+use App\Enums\PurchaseOrderStatus;
 use App\Livewire\Concerns\WithShop;
 use App\Models\Location;
 use App\Models\Product;
+use App\Models\PurchaseOrderLine;
 use App\Models\StockMovement;
 use App\Support\AverageCost;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -63,7 +65,8 @@ class Show extends Component
     {
         $ids = $this->product->variants()->pluck('id');
 
-        return ! StockMovement::query()->whereIn('product_variant_id', $ids)->exists();
+        return ! StockMovement::query()->whereIn('product_variant_id', $ids)->exists()
+            && ! PurchaseOrderLine::query()->whereIn('product_variant_id', $ids)->exists();
     }
 
     /**
@@ -93,10 +96,27 @@ class Show extends Component
         return $matrix;
     }
 
+    /**
+     * Units still to arrive on open purchase orders, per variant.
+     *
+     * @return array<int, int>
+     */
+    public function onOrder(): array
+    {
+        return PurchaseOrderLine::query()
+            ->whereIn('product_variant_id', $this->product->variants->pluck('id'))
+            ->whereHas('purchaseOrder', fn ($q) => $q->whereIn('status', PurchaseOrderStatus::open()))
+            ->selectRaw('product_variant_id, SUM(quantity_ordered - quantity_received) as outstanding')
+            ->groupBy('product_variant_id')
+            ->pluck('outstanding', 'product_variant_id')
+            ->map(fn ($qty) => (int) $qty)
+            ->all();
+    }
+
     public function movements(): LengthAwarePaginator
     {
         return StockMovement::query()
-            ->with(['variant', 'location', 'user'])
+            ->with(['variant', 'location', 'user', 'purchaseOrder'])
             ->whereIn('product_variant_id', $this->product->variants->pluck('id'))
             ->orderByDesc('created_at')->orderByDesc('id')
             ->paginate(20, pageName: 'ledger');
