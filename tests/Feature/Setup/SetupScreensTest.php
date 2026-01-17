@@ -8,6 +8,7 @@ use App\Models\Location;
 use App\Models\PurchaseOrder;
 use App\Models\Shop;
 use App\Models\Supplier;
+use App\Services\StockService;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -94,8 +95,14 @@ test('adds locations and changes the default', function () {
         ->and($this->shop->defaultLocation()->is($back))->toBeTrue();
 });
 
-test('the last location can not be deleted', function () {
-    Livewire::test(Locations\Index::class)->call('delete', mainLocation($this->shop)->id);
+test('locations with stock history or the last location can not be deleted', function () {
+    $main = mainLocation($this->shop);
+    app(StockService::class)->receive(variant($this->shop), $main, 1, 100);
+    $empty = otherLocation($this->shop);
 
-    expect(Location::count())->toBe(1);
+    Livewire::test(Locations\Index::class)
+        ->call('delete', $main->id)
+        ->call('delete', $empty->id);
+
+    expect(Location::pluck('id')->all())->toBe([$main->id]);
 });

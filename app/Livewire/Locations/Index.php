@@ -4,6 +4,7 @@ namespace App\Livewire\Locations;
 
 use App\Livewire\Concerns\WithShop;
 use App\Models\Location;
+use App\Models\PurchaseOrder;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Unique;
@@ -93,6 +94,12 @@ class Index extends Component
         $this->authorizeOwner();
 
         $location = Location::query()->findOrFail($id);
+
+        if ($location->movements()->exists() || PurchaseOrder::query()->where('location_id', $id)->exists()) {
+            $this->dispatch('notify', message: "{$location->name} has stock history and can't be deleted.");
+
+            return;
+        }
 
         if (Location::query()->count() === 1) {
             $this->dispatch('notify', message: 'A shop needs at least one location.');
