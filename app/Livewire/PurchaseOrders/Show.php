@@ -17,6 +17,11 @@ class Show extends Component
 
     public PurchaseOrder $order;
 
+    /** @var array<int, string> line id => quantity to receive now */
+    public array $receive = [];
+
+    public bool $receiving = false;
+
     public function mount(PurchaseOrder $purchaseOrder): void
     {
         $this->order = $purchaseOrder;
@@ -25,6 +30,38 @@ class Show extends Component
     public function placeOrder(PurchaseOrderService $orders): void
     {
         $this->run(fn () => $orders->markOrdered($this->order), 'Order placed. Receive it here when it arrives.');
+    }
+
+    public function startReceiving(): void
+    {
+        $this->receiving = true;
+        $this->receive = [];
+    }
+
+    public function cancelReceiving(): void
+    {
+        $this->receiving = false;
+        $this->receive = [];
+        $this->resetErrorBag();
+    }
+
+    public function saveReceipt(PurchaseOrderService $orders): void
+    {
+        $this->validate([
+            'receive' => ['array'],
+            'receive.*' => ['nullable', 'integer', 'min:0', 'max:1000000'],
+        ], [], ['receive.*' => 'quantity']);
+
+        $quantities = array_map(fn ($qty) => (int) $qty, array_filter($this->receive, fn ($qty) => $qty !== '' && $qty !== null));
+
+        $done = $this->run(fn () => $orders->receive($this->order, $quantities, $this->user()), null);
+
+        if ($done) {
+            $this->order->refresh();
+            $this->receiving = false;
+            $this->receive = [];
+            $this->notify($this->order->status->value === 'received' ? 'Order fully received.' : 'Delivery booked in. The rest is still on order.');
+        }
     }
 
     public function cancelOrder(PurchaseOrderService $orders): void

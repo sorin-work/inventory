@@ -29,6 +29,7 @@ class StockMovement extends Model
         'reason',
         'note',
         'transfer_id',
+        'purchase_order_id',
     ];
 
     protected function casts(): array
@@ -65,6 +66,14 @@ class StockMovement extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo<PurchaseOrder, $this>
+     */
+    public function purchaseOrder(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseOrder::class);
     }
 
     /**

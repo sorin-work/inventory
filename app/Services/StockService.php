@@ -7,6 +7,7 @@ use App\Enums\MovementType;
 use App\Exceptions\StockException;
 use App\Models\Location;
 use App\Models\ProductVariant;
+use App\Models\PurchaseOrder;
 use App\Models\StockLevel;
 use App\Models\StockMovement;
 use App\Models\User;
@@ -27,10 +28,11 @@ class StockService
         float $unitCost,
         ?User $user = null,
         ?string $note = null,
+        ?PurchaseOrder $purchaseOrder = null,
     ): StockMovement {
         $this->guard($variant, $location, $quantity);
 
-        return DB::transaction(function () use ($variant, $location, $quantity, $unitCost, $user, $note) {
+        return DB::transaction(function () use ($variant, $location, $quantity, $unitCost, $user, $note, $purchaseOrder) {
             $locked = $this->lockVariant($variant);
             $onHand = (int) StockLevel::query()->where('product_variant_id', $locked->id)->sum('quantity');
 
@@ -46,6 +48,7 @@ class StockService
                 'user_id' => $user?->id,
                 'unit_cost' => $unitCost,
                 'note' => $note,
+                'purchase_order_id' => $purchaseOrder?->id,
             ]);
         });
     }

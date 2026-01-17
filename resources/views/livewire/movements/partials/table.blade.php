@@ -41,10 +41,13 @@
                             @if ($movement->reason)
                                 <span class="font-medium">{{ $movement->reason->label() }}</span>
                             @endif
+                            @if ($movement->purchaseOrder)
+                                <a href="{{ route('purchase-orders.show', $movement->purchaseOrder) }}" wire:navigate class="text-indigo-600 hover:underline">{{ $movement->purchaseOrder->number }}</a>
+                            @endif
                             @if ($movement->unit_price_cents !== null)
                                 <span>at {{ $this->money($movement->unit_price_cents) }}</span>
                             @endif
-                            @if ($movement->note)
+                            @if ($movement->note && ! $movement->purchaseOrder)
                                 <span class="text-gray-500">{{ $movement->note }}</span>
                             @endif
                         </x-td>

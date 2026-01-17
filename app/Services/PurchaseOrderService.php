@@ -81,6 +81,64 @@ class PurchaseOrderService
         return $order;
     }
 
+    /**
+     * Books in delivered stock. Quantities are keyed by line id; lines left
+     * out or set to zero are skipped. Each received line becomes a receipt
+     * movement at the order's location, costed at the line's unit cost.
+     *
+     * @param  array<int, int>  $quantities
+     */
+    public function receive(PurchaseOrder $order, array $quantities, ?User $user = null): PurchaseOrder
+    {
+        if (! $order->status->canReceive()) {
+            throw PurchaseOrderException::cannot('received', $order->status);
+        }
+
+        $quantities = array_filter(array_map('intval', $quantities), fn (int $qty) => $qty !== 0);
+
+        if ($quantities === []) {
+            throw PurchaseOrderException::nothingToReceive();
+        }
+
+        return DB::transaction(function () use ($order, $quantities, $user) {
+            $order = PurchaseOrder::withoutGlobalScopes()->lockForUpdate()->findOrFail($order->id);
+            $order->load('lines.variant.product', 'location');
+
+            foreach ($quantities as $lineId => $quantity) {
+                $line = $order->lines->firstWhere('id', $lineId);
+
+                if ($line === null) {
+                    continue;
+                }
+
+                if ($quantity < 0 || $quantity > $line->remaining()) {
+                    throw PurchaseOrderException::overReceived($line->variant->sku, $line->remaining());
+                }
+
+                $this->stock->receive(
+                    $line->variant,
+                    $order->location,
+                    $quantity,
+                    $line->unit_cost_cents,
+                    $user,
+                    $order->number,
+                    $order,
+                );
+
+                $line->increment('quantity_received', $quantity);
+            }
+
+            $complete = $order->lines->every(fn ($line) => $line->isFullyReceived());
+
+            $order->forceFill([
+                'status' => $complete ? PurchaseOrderStatus::Received : PurchaseOrderStatus::PartiallyReceived,
+                'received_at' => $complete ? now() : null,
+            ])->save();
+
+            return $order;
+        });
+    }
+
     public function cancel(PurchaseOrder $order): PurchaseOrder
     {
         if (! in_array($order->status, [PurchaseOrderStatus::Draft, PurchaseOrderStatus::Ordered], true)) {

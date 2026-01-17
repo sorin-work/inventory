@@ -4,6 +4,7 @@ use App\Enums\PurchaseOrderStatus;
 use App\Exceptions\PurchaseOrderException;
 use App\Models\PurchaseOrder;
 use App\Models\Shop;
+use App\Models\StockMovement;
 use App\Services\PurchaseOrderService;
 
 beforeEach(function () {
@@ -44,6 +45,56 @@ test('placing an order needs at least one line', function () {
     $this->orders->markOrdered($order);
 })->throws(PurchaseOrderException::class, 'at least one line');
 
+test('receiving part of an order books stock and marks it partially received', function () {
+    $order = $this->orders->markOrdered(draft());
+    $mugLine = $order->lines->firstWhere('product_variant_id', $this->mug->id);
+
+    $order = $this->orders->receive($order, [$mugLine->id => 6]);
+
+    expect($order->status)->toBe(PurchaseOrderStatus::PartiallyReceived)
+        ->and($order->received_at)->toBeNull()
+        ->and($mugLine->fresh()->quantity_received)->toBe(6)
+        ->and($this->mug->quantityAt($this->location))->toBe(6)
+        ->and($this->mug->fresh()->average_cost)->toBe(1150.0);
+
+    $movement = StockMovement::sole();
+    expect($movement->purchase_order_id)->toBe($order->id)
+        ->and($movement->note)->toBe($order->number);
+});
+
+test('receiving the rest completes the order', function () {
+    $order = $this->orders->markOrdered(draft());
+    [$mugLine, $bowlLine] = $order->lines->all();
+
+    $this->orders->receive($order, [$mugLine->id => 6]);
+    $order = $this->orders->receive($order->fresh(), [$mugLine->id => 4, $bowlLine->id => 4]);
+
+    expect($order->status)->toBe(PurchaseOrderStatus::Received)
+        ->and($order->received_at)->not->toBeNull()
+        ->and($this->mug->fresh()->onHand())->toBe(10)
+        ->and($this->bowl->fresh()->onHand())->toBe(4);
+});
+
+test('cannot receive more than is outstanding', function () {
+    $order = $this->orders->markOrdered(draft());
+    $line = $order->lines->first();
+
+    expect(fn () => $this->orders->receive($order, [$line->id => 11]))
+        ->toThrow(PurchaseOrderException::class, 'Only 10');
+
+    expect(StockMovement::count())->toBe(0);
+});
+
+test('receiving needs at least one quantity', function () {
+    $order = $this->orders->markOrdered(draft());
+
+    $this->orders->receive($order, [$order->lines->first()->id => 0]);
+})->throws(PurchaseOrderException::class, 'at least one line');
+
+test('drafts and finished orders cannot be received', function () {
+    $this->orders->receive(draft(), [1 => 1]);
+})->throws(PurchaseOrderException::class, 'draft order cannot be received');
+
 test('drafts and untouched orders can be cancelled', function () {
     $cancelled = $this->orders->cancel(draft());
     $placed = $this->orders->cancel($this->orders->markOrdered(draft()));
@@ -51,3 +102,10 @@ test('drafts and untouched orders can be cancelled', function () {
     expect($cancelled->status)->toBe(PurchaseOrderStatus::Cancelled)
         ->and($placed->status)->toBe(PurchaseOrderStatus::Cancelled);
 });
+
+test('orders with deliveries cannot be cancelled', function () {
+    $order = $this->orders->markOrdered(draft());
+    $order = $this->orders->receive($order, [$order->lines->first()->id => 1]);
+
+    $this->orders->cancel($order->fresh('lines'));
+})->throws(PurchaseOrderException::class);
