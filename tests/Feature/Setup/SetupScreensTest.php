@@ -5,6 +5,7 @@ use App\Livewire\Locations;
 use App\Livewire\Suppliers;
 use App\Models\Category;
 use App\Models\Location;
+use App\Models\PurchaseOrder;
 use App\Models\Shop;
 use App\Models\Supplier;
 use Livewire\Livewire;
@@ -36,6 +37,20 @@ test('adds and edits a supplier', function () {
         ->call('save');
 
     expect($supplier->fresh()->phone)->toBe('+1 503 555 0178');
+});
+
+test('suppliers with purchase orders can not be deleted', function () {
+    $used = supplier($this->shop);
+    PurchaseOrder::factory()->create(['shop_id' => $this->shop->id, 'supplier_id' => $used->id]);
+    $unused = supplier($this->shop);
+    $product = variant($this->shop, [], ['supplier_id' => $unused->id])->product;
+
+    Livewire::test(Suppliers\Index::class)
+        ->call('delete', $used->id)
+        ->call('delete', $unused->id);
+
+    expect(Supplier::pluck('id')->all())->toBe([$used->id])
+        ->and($product->fresh()->supplier_id)->toBeNull();
 });
 
 test('manages categories', function () {

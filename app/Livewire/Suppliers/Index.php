@@ -20,10 +20,16 @@ class Index extends Component
     {
         $this->authorizeOwner();
 
-        $supplier = Supplier::query()->findOrFail($id);
-        $supplier->delete();
+        $supplier = Supplier::query()->withCount('purchaseOrders')->findOrFail($id);
 
-        $this->notify("{$supplier->name} deleted.");
+        if ($supplier->purchase_orders_count > 0) {
+            $this->dispatch('notify', message: "{$supplier->name} has purchase orders and can't be deleted.");
+
+            return;
+        }
+
+        $supplier->delete();
+        $this->notify("{$supplier->name} deleted. Its products no longer have a supplier.");
     }
 
     public function suppliers(): LengthAwarePaginator
