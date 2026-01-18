@@ -20,6 +20,8 @@
                             <x-th>Name</x-th>
                             <x-th>Contact</x-th>
                             <x-th align="right">Lead time</x-th>
+                            <x-th align="right">Products</x-th>
+                            <x-th align="right">Open orders</x-th>
                             <x-th><span class="sr-only">Actions</span></x-th>
                         </tr>
                     </thead>
@@ -37,6 +39,12 @@
                                     @endif
                                 </x-td>
                                 <x-td align="right" class="text-gray-600">{{ $supplier->lead_time_days ? $supplier->lead_time_days.' days' : '—' }}</x-td>
+                                <x-td align="right" class="tabular-nums">
+                                    <a href="{{ route('products.index', ['supplier' => $supplier->id]) }}" wire:navigate class="text-indigo-600 hover:underline">{{ $supplier->products_count }}</a>
+                                </x-td>
+                                <x-td align="right" class="tabular-nums">
+                                    {{ $supplier->open_orders_count }}
+                                </x-td>
                                 <x-td align="right" class="whitespace-nowrap">
                                     <a href="{{ route('suppliers.edit', $supplier) }}" wire:navigate class="text-sm text-indigo-600 hover:underline">Edit</a>
                                     @can('manage-shop')

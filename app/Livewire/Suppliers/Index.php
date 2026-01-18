@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Suppliers;
 
+use App\Enums\PurchaseOrderStatus;
 use App\Livewire\Concerns\WithShop;
 use App\Models\Supplier;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -35,6 +36,7 @@ class Index extends Component
     public function suppliers(): LengthAwarePaginator
     {
         return Supplier::query()
+            ->withCount(['products', 'purchaseOrders as open_orders_count' => fn ($q) => $q->whereIn('status', PurchaseOrderStatus::open())])
             ->orderBy('name')
             ->paginate(25);
     }
