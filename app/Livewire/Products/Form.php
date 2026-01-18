@@ -159,6 +159,8 @@ class Form extends Component
 
     public function removeVariant(int $index): void
     {
+        $this->resetErrorBag();
+
         $id = $this->variants[$index]['id'] ?? null;
 
         if ($id !== null && ! $this->canDeleteVariant($id)) {

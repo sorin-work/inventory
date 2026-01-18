@@ -134,6 +134,7 @@ test('variants with stock history can not be removed', function () {
         ->call('removeVariant', 0)
         ->assertHasErrors('variants.0.sku')
         ->call('removeVariant', 1)
+        ->assertHasNoErrors()
         ->call('save');
 
     expect($product->variants()->pluck('sku')->all())->toBe(['MUG-WHITE']);
