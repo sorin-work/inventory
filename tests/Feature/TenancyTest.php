@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Product;
+use App\Models\PurchaseOrder;
 use App\Models\Shop;
 use App\Models\Supplier;
 
@@ -23,12 +24,14 @@ test('queries only see the signed in shop', function () {
 
 test('records from another shop are not found', function () {
     $theirs = variant($this->theirs);
+    $order = PurchaseOrder::factory()->create(['shop_id' => $this->theirs->id]);
     $supplier = supplier($this->theirs);
 
     $this->actingAs($this->user);
 
     $this->get(route('products.show', $theirs->product_id))->assertNotFound();
     $this->get(route('products.edit', $theirs->product_id))->assertNotFound();
+    $this->get(route('purchase-orders.show', $order))->assertNotFound();
     $this->get(route('suppliers.edit', $supplier))->assertNotFound();
 });
 
