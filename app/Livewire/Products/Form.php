@@ -164,7 +164,7 @@ class Form extends Component
         $id = $this->variants[$index]['id'] ?? null;
 
         if ($id !== null && ! $this->canDeleteVariant($id)) {
-            $this->addError("variants.{$index}.sku", 'This variant has stock history and cannot be removed. Archive the product instead.');
+            $this->addError("variants.{$index}.sku", 'This variant has stock history or purchase orders and cannot be removed. Archive the product instead.');
 
             return;
         }
@@ -338,7 +338,8 @@ class Form extends Component
             return true;
         }
 
-        return ! $variant->movements()->exists();
+        return ! $variant->movements()->exists()
+            && ! DB::table('purchase_order_lines')->where('product_variant_id', $id)->exists();
     }
 
     /**
