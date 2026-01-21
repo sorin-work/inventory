@@ -1,5 +1,6 @@
 @php
     $stats = $this->stats();
+    $openOrders = $this->openOrders();
     $recent = $this->recentMovements();
 @endphp
 
@@ -12,6 +13,29 @@
     </dl>
 
     <div class="grid gap-6 lg:grid-cols-2">
+        <x-card title="Open purchase orders" :padding="false">
+            <x-slot name="actions">
+                <a href="{{ route('purchase-orders.index') }}" wire:navigate class="text-indigo-600 hover:underline">View all</a>
+            </x-slot>
+            @if ($openOrders->isEmpty())
+                <p class="px-4 py-6 text-center text-sm text-gray-500">No orders on the way.</p>
+            @else
+                <ul class="divide-y divide-gray-100">
+                    @foreach ($openOrders as $order)
+                        <li class="flex items-center justify-between px-4 py-2.5 text-sm">
+                            <div class="min-w-0">
+                                <a href="{{ route('purchase-orders.show', $order) }}" wire:navigate class="font-medium text-gray-900 hover:underline">{{ $order->number }}</a>
+                                <span class="text-gray-500">· {{ $order->supplier->name }}</span>
+                            </div>
+                            <span class="ms-3 shrink-0 text-xs text-gray-500">
+                                {{ $order->expected_on ? 'Due '.$order->expected_on->format('M j') : $order->status->label() }}
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </x-card>
+
         <x-card title="Recent stock movements" :padding="false" class="lg:col-span-2">
             <x-slot name="actions">
                 <a href="{{ route('movements.index') }}" wire:navigate class="text-indigo-600 hover:underline">Ledger</a>

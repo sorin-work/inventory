@@ -2,8 +2,10 @@
 
 namespace App\Livewire;
 
+use App\Enums\PurchaseOrderStatus;
 use App\Livewire\Concerns\WithShop;
 use App\Models\ProductVariant;
+use App\Models\PurchaseOrder;
 use App\Models\StockMovement;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
@@ -32,6 +34,20 @@ class Dashboard extends Component
                 ->where('created_at', '>=', now()->subDays(30))
                 ->sum('quantity'),
         ];
+    }
+
+    /**
+     * @return Collection<int, PurchaseOrder>
+     */
+    public function openOrders(): Collection
+    {
+        return PurchaseOrder::query()
+            ->whereIn('status', PurchaseOrderStatus::open())
+            ->with('supplier', 'lines')
+            ->orderByRaw('CASE WHEN expected_on IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('expected_on')
+            ->limit(6)
+            ->get();
     }
 
     /**
