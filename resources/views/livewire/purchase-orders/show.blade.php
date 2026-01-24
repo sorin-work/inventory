@@ -30,7 +30,7 @@
     <dl class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <x-stat label="Supplier" :value="$order->supplier->name" :hint="$order->supplier->email" />
         <x-stat label="Deliver to" :value="$order->location->name" />
-        <x-stat label="Expected" :value="$order->expected_on?->toFormattedDateString() ?? '—'" :hint="$order->ordered_at ? 'Ordered '.$order->ordered_at->toFormattedDateString() : null" />
+        <x-stat label="Expected" :value="$order->expected_on?->toFormattedDateString() ?? '—'" :hint="$order->isOverdue() ? 'Late' : ($order->ordered_at ? 'Ordered '.$order->ordered_at->toFormattedDateString() : null)" />
         <x-stat label="Total" :value="$this->money($order->totalCents())" :hint="$order->lines->count().' '.Str::plural('line', $order->lines->count())" />
     </dl>
 

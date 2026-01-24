@@ -49,7 +49,12 @@
                                 <x-td class="text-gray-700">{{ $order->supplier->name }}</x-td>
                                 <x-td><x-badge :color="$order->status->badgeClasses()">{{ $order->status->label() }}</x-badge></x-td>
                                 <x-td class="text-gray-600">{{ $order->location->name }}</x-td>
-                                <x-td class="whitespace-nowrap text-gray-600">{{ $order->expected_on?->toFormattedDateString() ?? '—' }}</x-td>
+                                <x-td class="whitespace-nowrap {{ $order->isOverdue() ? 'font-medium text-rose-700' : 'text-gray-600' }}">
+                                    {{ $order->expected_on?->toFormattedDateString() ?? '—' }}
+                                    @if ($order->isOverdue())
+                                        <span class="text-xs">(late)</span>
+                                    @endif
+                                </x-td>
                                 <x-td align="right" class="tabular-nums text-gray-900">{{ $this->money($order->totalCents()) }}</x-td>
                             </tr>
                         @endforeach

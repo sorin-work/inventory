@@ -129,3 +129,10 @@ test('lists open orders first and filters by status', function () {
         ->assertSee($draft->number)
         ->assertSee($placed->number);
 });
+
+test('flags late orders', function () {
+    $order = placedOrder();
+    $order->update(['expected_on' => today()->subDay()]);
+
+    $this->get(route('purchase-orders.index'))->assertSee('(late)', false);
+});
