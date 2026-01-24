@@ -156,9 +156,15 @@ class PurchaseOrderService
 
     public function nextNumber(Shop $shop): string
     {
-        $count = PurchaseOrder::withoutGlobalScopes()->where('shop_id', $shop->id)->count();
+        $last = PurchaseOrder::withoutGlobalScopes()
+            ->where('shop_id', $shop->id)
+            ->lockForUpdate()
+            ->orderByDesc('id')
+            ->value('number');
 
-        return sprintf('PO-%04d', $count + 1);
+        $next = $last === null ? 1 : ((int) preg_replace('/\D/', '', $last)) + 1;
+
+        return sprintf('PO-%04d', $next);
     }
 
     /**

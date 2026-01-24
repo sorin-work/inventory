@@ -38,6 +38,15 @@ test('drafts are numbered per shop', function () {
         ->and($first->totalCents())->toBe(10 * 1150 + 4 * 1500);
 });
 
+test('numbers are not reused after a draft is deleted', function () {
+    draft();
+    $second = draft();
+    draft()->delete();
+    $second->delete();
+
+    expect(draft()->number)->toBe('PO-0002');
+});
+
 test('placing an order needs at least one line', function () {
     $order = draft();
     $order->lines()->delete();
