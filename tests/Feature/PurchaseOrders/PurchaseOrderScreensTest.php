@@ -53,6 +53,15 @@ test('an order needs a supplier and lines', function () {
         ->assertHasErrors(['supplierId', 'lines']);
 });
 
+test('the supplier can be passed in the url', function () {
+    $this->get(route('purchase-orders.create', ['supplier' => $this->supplier->id]))
+        ->assertOk();
+
+    Livewire::withQueryParams(['supplier' => $this->supplier->id])
+        ->test(Form::class)
+        ->assertSet('supplierId', (string) $this->supplier->id);
+});
+
 test('edits a draft', function () {
     $order = app(PurchaseOrderService::class)->createDraft($this->shop, $this->supplier, $this->location, [
         ['product_variant_id' => $this->mug->id, 'quantity_ordered' => 2, 'unit_cost_cents' => 1100],

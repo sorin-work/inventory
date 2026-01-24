@@ -54,6 +54,13 @@ class Form extends Component
 
         $this->order = null;
         $this->locationId = (string) $this->shop()->defaultLocation()?->id;
+
+        $supplierId = request()->integer('supplier');
+
+        if ($supplierId > 0 && Supplier::query()->whereKey($supplierId)->exists()) {
+            $this->supplierId = (string) $supplierId;
+            $this->updatedSupplierId();
+        }
     }
 
     public function updatedSupplierId(): void

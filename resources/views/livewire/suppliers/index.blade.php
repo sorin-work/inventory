@@ -46,7 +46,8 @@
                                     {{ $supplier->open_orders_count }}
                                 </x-td>
                                 <x-td align="right" class="whitespace-nowrap">
-                                    <a href="{{ route('suppliers.edit', $supplier) }}" wire:navigate class="text-sm text-indigo-600 hover:underline">Edit</a>
+                                    <a href="{{ route('purchase-orders.create', ['supplier' => $supplier->id]) }}" wire:navigate class="text-sm text-indigo-600 hover:underline">Order</a>
+                                    <a href="{{ route('suppliers.edit', $supplier) }}" wire:navigate class="ms-3 text-sm text-indigo-600 hover:underline">Edit</a>
                                     @can('manage-shop')
                                         <button wire:click="delete({{ $supplier->id }})" wire:confirm="Delete {{ $supplier->name }}?" class="ms-3 text-sm text-rose-600 hover:underline">Delete</button>
                                     @endcan
