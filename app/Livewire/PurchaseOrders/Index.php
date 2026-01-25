@@ -2,7 +2,6 @@
 
 namespace App\Livewire\PurchaseOrders;
 
-use App\Enums\PurchaseOrderStatus;
 use App\Livewire\Concerns\WithShop;
 use App\Models\PurchaseOrder;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,7 +31,7 @@ class Index extends Component
     {
         return PurchaseOrder::query()
             ->with(['supplier', 'location', 'lines'])
-            ->when($this->status === 'open', fn (Builder $q) => $q->whereIn('status', PurchaseOrderStatus::open()))
+            ->when($this->status === 'open', fn (Builder $q) => $q->open())
             ->when(in_array($this->status, ['draft', 'received', 'cancelled'], true), fn (Builder $q) => $q->where('status', $this->status))
             ->orderByRaw('CASE WHEN expected_on IS NULL THEN 1 ELSE 0 END')
             ->orderBy($this->status === 'open' ? 'expected_on' : 'created_at', $this->status === 'open' ? 'asc' : 'desc')

@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Products;
 
-use App\Enums\PurchaseOrderStatus;
 use App\Livewire\Concerns\WithShop;
 use App\Models\Location;
 use App\Models\Product;
@@ -105,7 +104,7 @@ class Show extends Component
     {
         return PurchaseOrderLine::query()
             ->whereIn('product_variant_id', $this->product->variants->pluck('id'))
-            ->whereHas('purchaseOrder', fn ($q) => $q->whereIn('status', PurchaseOrderStatus::open()))
+            ->whereHas('purchaseOrder', fn ($q) => $q->open())
             ->selectRaw('product_variant_id, SUM(quantity_ordered - quantity_received) as outstanding')
             ->groupBy('product_variant_id')
             ->pluck('outstanding', 'product_variant_id')

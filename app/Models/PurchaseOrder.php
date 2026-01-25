@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PurchaseOrderStatus;
 use App\Models\Concerns\BelongsToShop;
 use Database\Factories\PurchaseOrderFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -76,6 +77,14 @@ class PurchaseOrder extends Model
     public function movements(): HasMany
     {
         return $this->hasMany(StockMovement::class);
+    }
+
+    /**
+     * @param  Builder<PurchaseOrder>  $query
+     */
+    public function scopeOpen(Builder $query): void
+    {
+        $query->whereIn('status', PurchaseOrderStatus::open());
     }
 
     public function totalCents(): int
