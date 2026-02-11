@@ -42,7 +42,7 @@ class Form extends Component
     public array $options = [];
 
     /**
-     * @var list<array{id: ?int, values: list<string>, sku: string, barcode: string, price: string}>
+     * @var list<array{id: ?int, values: list<string>, sku: string, barcode: string, price: string, reorder_point: string, reorder_quantity: string}>
      */
     public array $variants = [];
 
@@ -70,6 +70,8 @@ class Form extends Component
                 'sku' => $v->sku,
                 'barcode' => (string) $v->barcode,
                 'price' => number_format($v->price_cents / 100, 2, '.', ''),
+                'reorder_point' => (string) $v->reorder_point,
+                'reorder_quantity' => (string) $v->reorder_quantity,
             ])->all();
 
             return;
@@ -143,6 +145,8 @@ class Form extends Component
                 'values' => $values,
                 'sku' => $this->name !== '' ? Sku::suggest($this->name, $values) : '',
                 'price' => $template['price'],
+                'reorder_point' => $template['reorder_point'],
+                'reorder_quantity' => $template['reorder_quantity'],
             ];
         }, $combinations);
 
@@ -219,6 +223,8 @@ class Form extends Component
                     'barcode' => $row['barcode'] === '' ? null : $row['barcode'],
                     'option_values' => $this->options === [] ? null : array_map('trim', $row['values']),
                     'price_cents' => $row['price'] === '' ? 0 : Money::parse($row['price']),
+                    'reorder_point' => $row['reorder_point'] === '' ? null : (int) $row['reorder_point'],
+                    'reorder_quantity' => $row['reorder_quantity'] === '' ? null : (int) $row['reorder_quantity'],
                     'position' => $position,
                 ])->save();
 
@@ -260,6 +266,8 @@ class Form extends Component
             'variants.*.sku' => ['required', 'string', 'max:64', 'regex:'.Sku::PATTERN, 'distinct'],
             'variants.*.barcode' => ['nullable', 'string', 'max:48', 'distinct'],
             'variants.*.price' => ['nullable', 'numeric', 'min:0', 'max:10000000'],
+            'variants.*.reorder_point' => ['nullable', 'integer', 'min:0', 'max:1000000'],
+            'variants.*.reorder_quantity' => ['nullable', 'integer', 'min:1', 'max:1000000'],
         ];
     }
 
@@ -289,6 +297,8 @@ class Form extends Component
             'variants.*.sku' => 'SKU',
             'variants.*.barcode' => 'barcode',
             'variants.*.price' => 'price',
+            'variants.*.reorder_point' => 'reorder point',
+            'variants.*.reorder_quantity' => 'reorder quantity',
         ];
     }
 
@@ -356,7 +366,7 @@ class Form extends Component
     }
 
     /**
-     * @return array{id: null, values: list<string>, sku: string, barcode: string, price: string}
+     * @return array{id: null, values: list<string>, sku: string, barcode: string, price: string, reorder_point: string, reorder_quantity: string}
      */
     protected function blankVariant(): array
     {
@@ -366,6 +376,8 @@ class Form extends Component
             'sku' => '',
             'barcode' => '',
             'price' => '',
+            'reorder_point' => '',
+            'reorder_quantity' => '',
         ];
     }
 

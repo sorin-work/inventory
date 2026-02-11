@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->location = mainLocation($this->shop);
     $this->actingAs($this->user = owner($this->shop));
     $this->supplier = supplier($this->shop, ['name' => 'Riverbend Ceramics', 'lead_time_days' => 21]);
-    $this->mug = variant($this->shop, ['sku' => 'MUG', 'average_cost' => 1150], ['name' => 'Stoneware mug', 'supplier_id' => $this->supplier->id]);
+    $this->mug = variant($this->shop, ['sku' => 'MUG', 'average_cost' => 1150, 'reorder_quantity' => 12], ['name' => 'Stoneware mug', 'supplier_id' => $this->supplier->id]);
 });
 
 function placedOrder(): PurchaseOrder
@@ -32,7 +32,7 @@ test('creates a draft order', function () {
         ->set('supplierId', (string) $this->supplier->id)
         ->assertSet('expectedOn', today()->addDays(21)->toDateString())
         ->call('selectVariant', $this->mug->id)
-        ->assertSet('lines.0.quantity', '1')
+        ->assertSet('lines.0.quantity', '12')
         ->assertSet('lines.0.unit_cost', '11.50')
         ->set('lines.0.unit_cost', '11.00')
         ->call('save')

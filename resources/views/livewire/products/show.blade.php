@@ -57,6 +57,7 @@
                             <x-th align="right">{{ $location->name }}</x-th>
                         @endforeach
                         <x-th align="right">Total</x-th>
+                        <x-th align="right">Reorder at</x-th>
                         <x-th align="right">Price</x-th>
                         <x-th align="right">Avg cost</x-th>
                         <x-th><span class="sr-only">Actions</span></x-th>
@@ -64,7 +65,10 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach ($product->variants as $variant)
-                        @php $total = array_sum($matrix[$variant->id] ?? []); @endphp
+                        @php
+                            $total = array_sum($matrix[$variant->id] ?? []);
+                            $low = $variant->reorder_point !== null && $total <= $variant->reorder_point;
+                        @endphp
                         <tr wire:key="variant-{{ $variant->id }}">
                             <x-td>
                                 <div class="font-medium text-gray-900">{{ $variant->optionLabel() ?: 'Default' }}</div>
@@ -74,11 +78,12 @@
                                 <x-td align="right" class="tabular-nums text-gray-700">{{ $matrix[$variant->id][$location->id] ?? 0 }}</x-td>
                             @endforeach
                             <x-td align="right" class="tabular-nums">
-                                <span class="font-semibold">{{ $total }}</span>
+                                <span @class(['font-semibold', 'text-rose-700' => $low])>{{ $total }}</span>
                                 @if (($onOrder[$variant->id] ?? 0) > 0)
                                     <div class="text-xs text-sky-700">+{{ $onOrder[$variant->id] }} on order</div>
                                 @endif
                             </x-td>
+                            <x-td align="right" class="tabular-nums text-gray-600">{{ $variant->reorder_point ?? '—' }}</x-td>
                             <x-td align="right" class="tabular-nums text-gray-700">{{ $this->money($variant->price_cents) }}</x-td>
                             <x-td align="right" class="tabular-nums text-gray-700">{{ $this->money($variant->average_cost) }}</x-td>
                             <x-td align="right" class="whitespace-nowrap text-xs">

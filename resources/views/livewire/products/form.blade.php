@@ -24,7 +24,7 @@
                     </x-select>
                 </x-field>
 
-                <x-field label="Supplier" for="supplierId" error="supplierId" hint="Who you usually buy it from">
+                <x-field label="Supplier" for="supplierId" error="supplierId" hint="Used when creating purchase orders from the low stock report">
                     <x-select id="supplierId" wire:model="supplierId" class="block w-full">
                         <option value="">No supplier</option>
                         @foreach ($this->suppliers() as $supplier)
@@ -77,7 +77,7 @@
             @endif
         </x-card>
 
-        <x-card :title="count($variants) === 1 && $options === [] ? 'SKU and price' : 'Variants'" :padding="false">
+        <x-card :title="count($variants) === 1 && $options === [] ? 'SKU, price and reordering' : 'Variants'" :padding="false">
             <x-slot name="actions">
                 <button type="button" wire:click="addVariant" class="text-indigo-600 hover:underline">Add variant</button>
             </x-slot>
@@ -92,6 +92,8 @@
                             <x-th>SKU</x-th>
                             <x-th>Barcode</x-th>
                             <x-th>Price</x-th>
+                            <x-th>Reorder at</x-th>
+                            <x-th>Reorder qty</x-th>
                             <x-th><span class="sr-only">Remove</span></x-th>
                         </tr>
                     </thead>
@@ -121,6 +123,14 @@
                                     <x-text-input wire:model="variants.{{ $i }}.price" class="w-24" inputmode="decimal" placeholder="0.00" />
                                     <x-input-error :messages="$errors->get('variants.'.$i.'.price')" class="mt-1" />
                                 </td>
+                                <td class="px-2 py-2">
+                                    <x-text-input type="number" min="0" wire:model="variants.{{ $i }}.reorder_point" class="w-20" />
+                                    <x-input-error :messages="$errors->get('variants.'.$i.'.reorder_point')" class="mt-1" />
+                                </td>
+                                <td class="px-2 py-2">
+                                    <x-text-input type="number" min="1" wire:model="variants.{{ $i }}.reorder_quantity" class="w-20" />
+                                    <x-input-error :messages="$errors->get('variants.'.$i.'.reorder_quantity')" class="mt-1" />
+                                </td>
                                 <td class="px-2 py-2 text-right">
                                     @if (count($variants) > 1)
                                         <button type="button" wire:click="removeVariant({{ $i }})" class="text-sm text-rose-600 hover:underline">Remove</button>
@@ -133,7 +143,7 @@
             </div>
             <x-input-error :messages="$errors->get('variants')" class="px-4 py-2" />
             <p class="border-t border-gray-100 px-4 py-3 text-xs text-gray-500">
-                Stock is added on the receive screen, never here.
+                Leave “Reorder at” empty for products you don't restock. Stock is added on the receive screen or through purchase orders, never here.
             </p>
         </x-card>
 

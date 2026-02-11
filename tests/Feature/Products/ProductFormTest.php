@@ -26,6 +26,7 @@ test('creates a simple product with one variant', function () {
         ->set('variants.0.sku', 'pen-brass')
         ->set('variants.0.barcode', '4006381333931')
         ->set('variants.0.price', '32.50')
+        ->set('variants.0.reorder_point', '3')
         ->call('save')
         ->assertHasNoErrors()
         ->assertRedirect();
@@ -39,7 +40,9 @@ test('creates a simple product with one variant', function () {
         ->and($product->option_names)->toBeNull()
         ->and($variant->sku)->toBe('PEN-BRASS')
         ->and($variant->barcode)->toBe('4006381333931')
-        ->and($variant->price_cents)->toBe(3250);
+        ->and($variant->price_cents)->toBe(3250)
+        ->and($variant->reorder_point)->toBe(3)
+        ->and($variant->reorder_quantity)->toBeNull();
 });
 
 test('generates a variant for each combination of options', function () {

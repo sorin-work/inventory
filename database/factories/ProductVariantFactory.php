@@ -21,4 +21,9 @@ class ProductVariantFactory extends Factory
             'average_cost' => 0,
         ];
     }
+
+    public function reorderAt(int $point, ?int $quantity = null): static
+    {
+        return $this->state(fn () => ['reorder_point' => $point, 'reorder_quantity' => $quantity]);
+    }
 }

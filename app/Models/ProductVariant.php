@@ -27,6 +27,8 @@ class ProductVariant extends Model
         'option_values',
         'price_cents',
         'average_cost',
+        'reorder_point',
+        'reorder_quantity',
         'position',
     ];
 
@@ -36,6 +38,8 @@ class ProductVariant extends Model
             'option_values' => 'array',
             'price_cents' => 'integer',
             'average_cost' => 'float',
+            'reorder_point' => 'integer',
+            'reorder_quantity' => 'integer',
         ];
     }
 
@@ -134,5 +138,10 @@ class ProductVariant extends Model
     public function stockValue(): int
     {
         return AverageCost::value($this->onHand(), $this->average_cost);
+    }
+
+    public function isLowStock(): bool
+    {
+        return $this->reorder_point !== null && $this->onHand() <= $this->reorder_point;
     }
 }
