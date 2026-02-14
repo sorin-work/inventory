@@ -34,6 +34,12 @@ new class extends Component
             ],
         ],
         [
+            'title' => 'Reports',
+            'items' => [
+                ['label' => 'Low stock', 'route' => 'reports.low-stock', 'match' => 'reports.low-stock'],
+            ],
+        ],
+        [
             'title' => 'Setup',
             'items' => [
                 ['label' => 'Suppliers', 'route' => 'suppliers.index', 'match' => 'suppliers.*'],

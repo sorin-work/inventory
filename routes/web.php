@@ -6,6 +6,7 @@ use App\Livewire\Locations;
 use App\Livewire\Movements;
 use App\Livewire\Products;
 use App\Livewire\PurchaseOrders;
+use App\Livewire\Reports;
 use App\Livewire\Stock;
 use App\Livewire\Suppliers;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::get('purchase-orders/create', PurchaseOrders\Form::class)->name('purchase-orders.create');
     Route::get('purchase-orders/{purchaseOrder}', PurchaseOrders\Show::class)->name('purchase-orders.show');
     Route::get('purchase-orders/{purchaseOrder}/edit', PurchaseOrders\Form::class)->name('purchase-orders.edit');
+
+    Route::get('reports/low-stock', Reports\LowStock::class)->name('reports.low-stock');
 
     Route::get('suppliers', Suppliers\Index::class)->name('suppliers.index');
     Route::get('suppliers/create', Suppliers\Form::class)->name('suppliers.create');
