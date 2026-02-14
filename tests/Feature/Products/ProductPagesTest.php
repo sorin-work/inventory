@@ -34,16 +34,18 @@ test('searches by name, sku and barcode', function () {
         ->set('search', '96385074')->assertSee('Stoneware mug')->assertDontSee('Brass pen');
 });
 
-test('filters by category and archived', function () {
+test('filters by category, low stock and archived', function () {
     $candles = Category::factory()->create(['shop_id' => $this->shop->id]);
-    variant($this->shop, [], ['name' => 'Fig candle', 'category_id' => $candles->id]);
-    variant($this->shop, [], ['name' => 'Brass pen']);
+    variant($this->shop, ['reorder_point' => 5], ['name' => 'Fig candle', 'category_id' => $candles->id]);
+    $plenty = variant($this->shop, ['reorder_point' => 1], ['name' => 'Brass pen']);
+    $this->stock->receive($plenty, mainLocation($this->shop), 10, 100);
     variant($this->shop, [], ['name' => 'Old stock', 'archived_at' => now()]);
 
     Livewire::test(Index::class)
         ->assertDontSee('Old stock')
         ->set('categoryId', (string) $candles->id)->assertSee('Fig candle')->assertDontSee('Brass pen')
-        ->set('categoryId', '')->set('status', 'archived')->assertSee('Old stock')->assertDontSee('Fig candle');
+        ->set('categoryId', '')->set('status', 'low')->assertSee('Fig candle')->assertDontSee('Brass pen')
+        ->set('status', 'archived')->assertSee('Old stock')->assertDontSee('Fig candle');
 });
 
 test('the product page shows stock per location and the ledger', function () {

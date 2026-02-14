@@ -24,6 +24,7 @@
 
         <x-select wire:model.live="status">
             <option value="active">Active</option>
+            <option value="low">Low stock</option>
             <option value="archived">Archived</option>
             <option value="all">All</option>
         </x-select>
@@ -56,6 +57,7 @@
                         @foreach ($products as $product)
                             @php
                                 $prices = $product->variants->pluck('price_cents');
+                                $low = $product->variants->contains(fn ($v) => $v->isLowStock());
                             @endphp
                             <tr wire:key="product-{{ $product->id }}" class="hover:bg-gray-50">
                                 <x-td>
@@ -83,8 +85,11 @@
                                     @endif
                                 </x-td>
                                 <x-td align="right" class="tabular-nums">
-                                    <span class="font-medium text-gray-900">{{ number_format($product->on_hand) }}</span>
+                                    <span @class(['font-medium', 'text-rose-700' => $low, 'text-gray-900' => ! $low])>{{ number_format($product->on_hand) }}</span>
                                     <span class="text-xs text-gray-500">{{ $product->unit }}</span>
+                                    @if ($low)
+                                        <x-badge color="bg-rose-50 text-rose-700 ring-rose-600/20" class="ms-1">Low</x-badge>
+                                    @endif
                                 </x-td>
                             </tr>
                         @endforeach

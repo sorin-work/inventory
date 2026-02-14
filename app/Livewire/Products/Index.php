@@ -31,7 +31,7 @@ class Index extends Component
     #[Url(as: 'supplier', except: '')]
     public string $supplierId = '';
 
-    /** active, archived or all */
+    /** active, low, archived or all */
     #[Url(except: 'active')]
     public string $status = 'active';
 
@@ -64,7 +64,14 @@ class Index extends Component
             ->when($this->categoryId !== '', fn (Builder $q) => $q->where('category_id', $this->categoryId))
             ->when($this->supplierId !== '', fn (Builder $q) => $q->where('supplier_id', $this->supplierId))
             ->when($this->status === 'active', fn (Builder $q) => $q->whereNull('archived_at'))
-            ->when($this->status === 'archived', fn (Builder $q) => $q->whereNotNull('archived_at'));
+            ->when($this->status === 'archived', fn (Builder $q) => $q->whereNotNull('archived_at'))
+            ->when($this->status === 'low', function (Builder $q) {
+                $q->whereNull('archived_at')->whereHas('variants', function (Builder $v) {
+                    $v->whereNotNull('reorder_point')->whereRaw(
+                        '(select coalesce(sum(quantity), 0) from stock_levels where stock_levels.product_variant_id = product_variants.id) <= product_variants.reorder_point'
+                    );
+                });
+            });
 
         return $query->orderBy('name')->paginate(25);
     }
