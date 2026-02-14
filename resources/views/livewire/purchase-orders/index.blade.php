@@ -6,6 +6,7 @@
 <div>
     <x-page-header title="Purchase orders" description="Orders to suppliers. Receiving an order adds the stock and updates average costs.">
         <x-slot name="actions">
+            <x-link-button variant="secondary" href="{{ route('reports.low-stock') }}">From low stock</x-link-button>
             <x-link-button href="{{ route('purchase-orders.create') }}">New order</x-link-button>
         </x-slot>
     </x-page-header>
@@ -26,7 +27,7 @@
 
     <x-card :padding="false">
         @if ($orders->isEmpty())
-            <x-empty-state title="No purchase orders here" description="Create one to order stock from a supplier.">
+            <x-empty-state title="No purchase orders here" description="Create one by hand or from the low stock report.">
                 <x-link-button href="{{ route('purchase-orders.create') }}">New order</x-link-button>
             </x-empty-state>
         @else
