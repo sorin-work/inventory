@@ -12,7 +12,7 @@ beforeEach(function () {
 });
 
 test('the dashboard summarises stock', function () {
-    $variant = variant($this->shop, [], ['name' => 'Stoneware mug']);
+    $variant = variant($this->shop, ['reorder_point' => 5], ['name' => 'Stoneware mug']);
     $this->stock->receive($variant, mainLocation($this->shop), 4, 1000);
     $this->stock->sell($variant, mainLocation($this->shop), 1);
 

@@ -1,5 +1,6 @@
 @php
     $stats = $this->stats();
+    $lowStock = $this->lowStock();
     $openOrders = $this->openOrders();
     $recent = $this->recentMovements();
 @endphp
@@ -7,12 +8,36 @@
 <div>
     <x-page-header title="Dashboard" :description="'Good '.(now()->hour < 12 ? 'morning' : (now()->hour < 18 ? 'afternoon' : 'evening')).', '.Str::before(auth()->user()->name, ' ').'.'" />
 
-    <dl class="mb-6 grid grid-cols-2 gap-4">
+    <dl class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <x-stat label="Products" :value="number_format($stats['variants'])" hint="Active variants" :href="route('products.index')" />
         <x-stat label="Units on hand" :value="number_format($stats['units'])" :hint="number_format($stats['sold_30d']).' sold in the last 30 days'" />
+        <x-stat label="Low stock" :value="$lowStock->count()" :hint="$lowStock->filter->isOut()->count().' out of stock'" :href="route('reports.low-stock')" />
     </dl>
 
     <div class="grid gap-6 lg:grid-cols-2">
+        <x-card title="Running low" :padding="false">
+            <x-slot name="actions">
+                <a href="{{ route('reports.low-stock') }}" wire:navigate class="text-indigo-600 hover:underline">View all</a>
+            </x-slot>
+            @if ($lowStock->isEmpty())
+                <p class="px-4 py-6 text-center text-sm text-gray-500">Nothing is below its reorder point.</p>
+            @else
+                <ul class="divide-y divide-gray-100">
+                    @foreach ($lowStock->take(6) as $row)
+                        <li class="flex items-center justify-between px-4 py-2.5 text-sm">
+                            <a href="{{ route('products.show', $row->variant->product_id) }}" wire:navigate class="truncate font-medium text-gray-900 hover:underline">{{ $row->variant->displayName() }}</a>
+                            <span class="ms-3 shrink-0 tabular-nums {{ $row->isOut() ? 'text-rose-700' : 'text-amber-700' }}">
+                                {{ $row->onHand }} / {{ $row->variant->reorder_point }}
+                                @if ($row->onOrder > 0)
+                                    <span class="text-xs text-sky-700">+{{ $row->onOrder }} coming</span>
+                                @endif
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </x-card>
+
         <x-card title="Open purchase orders" :padding="false">
             <x-slot name="actions">
                 <a href="{{ route('purchase-orders.index') }}" wire:navigate class="text-indigo-600 hover:underline">View all</a>

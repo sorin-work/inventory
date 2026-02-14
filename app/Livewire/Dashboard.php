@@ -6,6 +6,8 @@ use App\Livewire\Concerns\WithShop;
 use App\Models\ProductVariant;
 use App\Models\PurchaseOrder;
 use App\Models\StockMovement;
+use App\Services\Reports\LowStockReport;
+use App\Services\Reports\LowStockRow;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -33,6 +35,14 @@ class Dashboard extends Component
                 ->where('created_at', '>=', now()->subDays(30))
                 ->sum('quantity'),
         ];
+    }
+
+    /**
+     * @return Collection<int, LowStockRow>
+     */
+    public function lowStock(): Collection
+    {
+        return app(LowStockReport::class)->rows($this->shop());
     }
 
     /**
