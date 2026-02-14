@@ -5,10 +5,12 @@ namespace App\Services;
 use App\Enums\PurchaseOrderStatus;
 use App\Exceptions\PurchaseOrderException;
 use App\Models\Location;
+use App\Models\ProductVariant;
 use App\Models\PurchaseOrder;
 use App\Models\Shop;
 use App\Models\Supplier;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseOrderService
@@ -152,6 +154,40 @@ class PurchaseOrderService
         $order->forceFill(['status' => PurchaseOrderStatus::Cancelled])->save();
 
         return $order;
+    }
+
+    /**
+     * Turns a selection from the low stock report into one draft per
+     * supplier. Variants whose product has no supplier are returned so the
+     * caller can say why they were left out.
+     *
+     * @param  array<int, int>  $quantities  variant id => quantity
+     * @return array{orders: Collection<int, PurchaseOrder>, skipped: Collection<int, ProductVariant>}
+     */
+    public function draftsFromLowStock(Shop $shop, Location $location, array $quantities, ?User $user = null): array
+    {
+        $variants = ProductVariant::query()
+            ->with('product')
+            ->where('shop_id', $shop->id)
+            ->whereIn('id', array_keys(array_filter($quantities, fn ($qty) => (int) $qty > 0)))
+            ->get();
+
+        [$withSupplier, $skipped] = $variants->partition(fn (ProductVariant $v) => $v->product->supplier_id !== null);
+
+        $orders = $withSupplier
+            ->groupBy(fn (ProductVariant $v) => $v->product->supplier_id)
+            ->map(function (Collection $group, int $supplierId) use ($shop, $location, $quantities, $user) {
+                $lines = $group->map(fn (ProductVariant $v) => [
+                    'product_variant_id' => $v->id,
+                    'quantity_ordered' => (int) $quantities[$v->id],
+                    'unit_cost_cents' => (int) round($v->average_cost),
+                ])->values()->all();
+
+                return $this->createDraft($shop, Supplier::findOrFail($supplierId), $location, $lines, [], $user);
+            })
+            ->values();
+
+        return ['orders' => $orders, 'skipped' => $skipped->values()];
     }
 
     public function nextNumber(Shop $shop): string

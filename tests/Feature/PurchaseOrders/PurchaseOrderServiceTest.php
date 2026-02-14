@@ -118,3 +118,24 @@ test('orders with deliveries cannot be cancelled', function () {
 
     $this->orders->cancel($order->fresh('lines'));
 })->throws(PurchaseOrderException::class);
+
+test('low stock selections become one draft per supplier', function () {
+    $other = supplier($this->shop, ['name' => 'Leaf Lane Tea']);
+    $tea = variant($this->shop, ['sku' => 'TEA', 'average_cost' => 480.4], ['supplier_id' => $other->id]);
+    $loose = variant($this->shop, ['sku' => 'LOOSE']);
+
+    $result = $this->orders->draftsFromLowStock($this->shop, $this->location, [
+        $this->mug->id => 12,
+        $this->bowl->id => 6,
+        $tea->id => 24,
+        $loose->id => 5,
+    ]);
+
+    expect($result['orders'])->toHaveCount(2)
+        ->and($result['skipped']->pluck('sku')->all())->toBe(['LOOSE']);
+
+    $teaOrder = $result['orders']->firstWhere('supplier_id', $other->id);
+    expect($teaOrder->lines)->toHaveCount(1)
+        ->and($teaOrder->lines->first()->quantity_ordered)->toBe(24)
+        ->and($teaOrder->lines->first()->unit_cost_cents)->toBe(480);
+});
