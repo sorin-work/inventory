@@ -17,14 +17,22 @@ class LowStockReport
     /**
      * @return Collection<int, LowStockRow>
      */
-    public function rows(Shop $shop): Collection
+    public function rows(Shop $shop, ?int $categoryId = null, ?int $supplierId = null): Collection
     {
         $variants = ProductVariant::query()
             ->withoutGlobalScopes()
             ->where('product_variants.shop_id', $shop->id)
             ->whereNotNull('reorder_point')
-            ->whereHas('product', function ($query) {
+            ->whereHas('product', function ($query) use ($categoryId, $supplierId) {
                 $query->withoutGlobalScopes()->whereNull('archived_at');
+
+                if ($categoryId !== null) {
+                    $query->where('category_id', $categoryId);
+                }
+
+                if ($supplierId !== null) {
+                    $query->where('supplier_id', $supplierId);
+                }
             })
             ->withOnHand()
             ->with(['product' => fn ($q) => $q->withoutGlobalScopes()->with('supplier', 'category')])

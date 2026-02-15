@@ -3,7 +3,9 @@
 namespace App\Livewire\Reports;
 
 use App\Livewire\Concerns\WithShop;
+use App\Models\Category;
 use App\Models\Location;
+use App\Models\Supplier;
 use App\Services\PurchaseOrderService;
 use App\Services\Reports\LowStockReport;
 use App\Services\Reports\LowStockRow;
@@ -11,6 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 #[Layout('layouts.app')]
@@ -18,6 +21,12 @@ use Livewire\Component;
 class LowStock extends Component
 {
     use WithShop;
+
+    #[Url(as: 'category', except: '')]
+    public string $categoryId = '';
+
+    #[Url(as: 'supplier', except: '')]
+    public string $supplierId = '';
 
     /** @var array<int, string> variant id => quantity to order */
     public array $order = [];
@@ -33,12 +42,26 @@ class LowStock extends Component
         $this->prefill();
     }
 
+    public function updatedCategoryId(): void
+    {
+        $this->prefill();
+    }
+
+    public function updatedSupplierId(): void
+    {
+        $this->prefill();
+    }
+
     /**
      * @return Collection<int, LowStockRow>
      */
     public function rows(): Collection
     {
-        return app(LowStockReport::class)->rows($this->shop());
+        return app(LowStockReport::class)->rows(
+            $this->shop(),
+            $this->categoryId === '' ? null : (int) $this->categoryId,
+            $this->supplierId === '' ? null : (int) $this->supplierId,
+        );
     }
 
     public function createOrders(PurchaseOrderService $orders): void
@@ -97,6 +120,22 @@ class LowStock extends Component
             ->map(fn (LowStockRow $row) => $row->variant->id)
             ->values()
             ->all();
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function categories(): Collection
+    {
+        return Category::query()->orderBy('name')->get();
+    }
+
+    /**
+     * @return Collection<int, Supplier>
+     */
+    public function suppliers(): Collection
+    {
+        return Supplier::query()->orderBy('name')->get();
     }
 
     /**

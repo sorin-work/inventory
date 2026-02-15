@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Shop;
 use App\Services\PurchaseOrderService;
 use App\Services\Reports\LowStockReport;
@@ -61,4 +62,15 @@ test('takes open purchase orders into account', function () {
     expect($row->onOrder)->toBe(12)
         ->and($row->suggestedQuantity())->toBe(0)
         ->and($row->isCoveredByOpenOrders())->toBeTrue();
+});
+
+test('filters by category and supplier', function () {
+    $candles = Category::factory()->create(['shop_id' => $this->shop->id]);
+    $supplier = supplier($this->shop);
+    $candle = stocked(0, 2, ['category_id' => $candles->id]);
+    $supplied = stocked(0, 2, ['supplier_id' => $supplier->id]);
+    stocked(0, 2);
+
+    expect($this->report->rows($this->shop, categoryId: $candles->id)->pluck('variant.id')->all())->toBe([$candle->id])
+        ->and($this->report->rows($this->shop, supplierId: $supplier->id)->pluck('variant.id')->all())->toBe([$supplied->id]);
 });

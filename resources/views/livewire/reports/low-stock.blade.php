@@ -3,6 +3,21 @@
 <div>
     <x-page-header title="Low stock" description="Variants at or below their reorder point, counting stock across all locations. Stock already on order is taken into account." />
 
+    <div class="mb-4 flex flex-wrap gap-3">
+        <x-select wire:model.live="categoryId">
+            <option value="">All categories</option>
+            @foreach ($this->categories() as $category)
+                <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+        </x-select>
+        <x-select wire:model.live="supplierId">
+            <option value="">All suppliers</option>
+            @foreach ($this->suppliers() as $supplier)
+                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+            @endforeach
+        </x-select>
+    </div>
+
     <form wire:submit="createOrders">
         <x-card :padding="false">
             @if ($rows->isEmpty())
