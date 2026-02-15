@@ -24,7 +24,7 @@ class LowStockReport
             ->where('product_variants.shop_id', $shop->id)
             ->whereNotNull('reorder_point')
             ->whereHas('product', function ($query) {
-                $query->withoutGlobalScopes();
+                $query->withoutGlobalScopes()->whereNull('archived_at');
             })
             ->withOnHand()
             ->with(['product' => fn ($q) => $q->withoutGlobalScopes()->with('supplier', 'category')])
