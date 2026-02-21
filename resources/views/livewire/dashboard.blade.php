@@ -11,6 +11,11 @@
     <dl class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <x-stat label="Products" :value="number_format($stats['variants'])" hint="Active variants" :href="route('products.index')" />
         <x-stat label="Units on hand" :value="number_format($stats['units'])" :hint="number_format($stats['sold_30d']).' sold in the last 30 days'" />
+        @if ($stats['value_cents'] !== null)
+            <x-stat label="Stock value" :value="$this->money($stats['value_cents'])" hint="At average cost" :href="route('reports.valuation')" />
+        @else
+            <x-stat label="Open orders" :value="$openOrders->count()" :href="route('purchase-orders.index')" />
+        @endif
         <x-stat label="Low stock" :value="$lowStock->count()" :hint="$lowStock->filter->isOut()->count().' out of stock'" :href="route('reports.low-stock')" />
     </dl>
 

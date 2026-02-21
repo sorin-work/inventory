@@ -8,6 +8,7 @@ use App\Models\PurchaseOrder;
 use App\Models\StockMovement;
 use App\Services\Reports\LowStockReport;
 use App\Services\Reports\LowStockRow;
+use App\Services\Reports\ValuationReport;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -20,16 +21,19 @@ class Dashboard extends Component
     use WithShop;
 
     /**
-     * @return array{variants: int, units: int, sold_30d: int}
+     * @return array{variants: int, units: int, value_cents: ?int, sold_30d: int}
      */
     public function stats(): array
     {
+        $valuation = $this->user()->isOwner() ? app(ValuationReport::class)->summary($this->shop()) : null;
+
         return [
             'variants' => ProductVariant::query()->whereHas('product', fn ($q) => $q->active())->count(),
-            'units' => (int) ProductVariant::query()
+            'units' => (int) ($valuation['total_units'] ?? ProductVariant::query()
                 ->join('stock_levels', 'stock_levels.product_variant_id', '=', 'product_variants.id')
                 ->where('stock_levels.quantity', '>', 0)
-                ->sum('stock_levels.quantity'),
+                ->sum('stock_levels.quantity')),
+            'value_cents' => $valuation['total_cents'] ?? null,
             'sold_30d' => (int) -StockMovement::query()
                 ->where('type', 'sale')
                 ->where('created_at', '>=', now()->subDays(30))

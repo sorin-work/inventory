@@ -18,6 +18,7 @@ test('the dashboard summarises stock', function () {
 
     $this->get(route('dashboard'))
         ->assertOk()
+        ->assertSee('$30.00')
         ->assertSee('1 sold in the last 30 days')
         ->assertSee('Stoneware mug');
 });
