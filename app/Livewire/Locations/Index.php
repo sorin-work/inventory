@@ -5,7 +5,9 @@ namespace App\Livewire\Locations;
 use App\Livewire\Concerns\WithShop;
 use App\Models\Location;
 use App\Models\PurchaseOrder;
+use App\Support\AverageCost;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Attributes\Layout;
@@ -117,10 +119,23 @@ class Index extends Component
      */
     public function locations(): Collection
     {
+        $totals = DB::table('stock_levels')
+            ->join('product_variants', 'product_variants.id', '=', 'stock_levels.product_variant_id')
+            ->where('product_variants.shop_id', $this->shop()->id)
+            ->where('stock_levels.quantity', '>', 0)
+            ->groupBy('stock_levels.location_id')
+            ->selectRaw('stock_levels.location_id, SUM(stock_levels.quantity) as units, SUM(stock_levels.quantity * product_variants.average_cost) as value')
+            ->get()
+            ->keyBy('location_id');
+
         return Location::query()
             ->orderByDesc('is_default')
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->each(function (Location $location) use ($totals) {
+                $location->setAttribute('units', (int) ($totals[$location->id]->units ?? 0));
+                $location->setAttribute('value_cents', AverageCost::value(1, (float) ($totals[$location->id]->value ?? 0)));
+            });
     }
 
     private function uniqueName(?int $ignore = null): Unique

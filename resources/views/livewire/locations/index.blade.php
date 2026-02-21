@@ -31,6 +31,9 @@
                                     @if ($location->is_default)
                                         <x-badge color="bg-indigo-50 text-indigo-700 ring-indigo-600/20" class="ms-1">Default</x-badge>
                                     @endif
+                                    <p class="text-xs text-gray-500">
+                                        {{ number_format($location->units) }} units · {{ $this->money($location->value_cents) }}
+                                    </p>
                                 </div>
                                 <div class="flex gap-3 text-sm">
                                     @unless ($location->is_default)
