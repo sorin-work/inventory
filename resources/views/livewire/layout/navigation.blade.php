@@ -35,9 +35,10 @@ new class extends Component
         ],
         [
             'title' => 'Reports',
-            'items' => [
+            'items' => array_values(array_filter([
                 ['label' => 'Low stock', 'route' => 'reports.low-stock', 'match' => 'reports.low-stock'],
-            ],
+                $user->isOwner() ? ['label' => 'Valuation', 'route' => 'reports.valuation', 'match' => 'reports.valuation'] : null,
+            ])),
         ],
         [
             'title' => 'Setup',

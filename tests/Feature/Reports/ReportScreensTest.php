@@ -3,6 +3,7 @@
 use App\Livewire\Reports\LowStock;
 use App\Models\PurchaseOrder;
 use App\Models\Shop;
+use App\Services\StockService;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -49,4 +50,14 @@ test('needs a selection to create orders', function () {
 
 test('says when nothing is low', function () {
     $this->get(route('reports.low-stock'))->assertOk()->assertSee('Nothing is running low');
+});
+
+test('the valuation page shows totals', function () {
+    $variant = variant($this->shop, [], ['name' => 'Stoneware mug']);
+    app(StockService::class)->receive($variant, $this->location, 4, 1150);
+
+    $this->get(route('reports.valuation'))
+        ->assertOk()
+        ->assertSee('$46.00')
+        ->assertSee('Stoneware mug');
 });

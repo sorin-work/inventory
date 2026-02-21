@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::get('locations', Locations\Index::class)->name('locations.index');
 
     Route::view('profile', 'profile')->name('profile');
+
+    Route::middleware('can:manage-shop')->group(function () {
+        Route::get('reports/valuation', Reports\Valuation::class)->name('reports.valuation');
+    });
 });
 
 require __DIR__.'/auth.php';
