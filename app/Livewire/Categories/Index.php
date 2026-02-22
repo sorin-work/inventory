@@ -79,7 +79,7 @@ class Index extends Component
      */
     public function categories(): Collection
     {
-        return Category::query()->orderBy('name')->get();
+        return Category::query()->withCount('products')->orderBy('name')->get();
     }
 
     private function uniqueName(?int $ignore = null): Unique

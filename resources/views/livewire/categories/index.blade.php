@@ -23,6 +23,7 @@
                             @else
                                 <div>
                                     <span class="text-sm font-medium text-gray-900">{{ $category->name }}</span>
+                                    <a href="{{ route('products.index', ['category' => $category->id]) }}" wire:navigate class="ms-2 text-xs text-gray-500 hover:underline">{{ $category->products_count }} {{ Str::plural('product', $category->products_count) }}</a>
                                 </div>
                                 <div class="flex gap-3 text-sm">
                                     <button wire:click="edit({{ $category->id }})" class="text-indigo-600 hover:underline">Rename</button>

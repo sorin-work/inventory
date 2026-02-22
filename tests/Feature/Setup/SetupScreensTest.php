@@ -5,6 +5,7 @@ use App\Livewire\Locations;
 use App\Livewire\Suppliers;
 use App\Models\Category;
 use App\Models\Location;
+use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\Shop;
 use App\Models\Supplier;
@@ -63,6 +64,7 @@ test('manages categories', function () {
     expect(Category::pluck('name')->all())->toBe(['Candles']);
 
     $category = Category::sole();
+    $product = Product::factory()->create(['shop_id' => $this->shop->id, 'category_id' => $category->id]);
 
     $component->call('edit', $category->id)
         ->set('editingName', 'Candles & home fragrance')
@@ -73,7 +75,8 @@ test('manages categories', function () {
 
     $component->call('delete', $category->id);
 
-    expect(Category::count())->toBe(0);
+    expect(Category::count())->toBe(0)
+        ->and($product->fresh()->category_id)->toBeNull();
 });
 
 test('adds locations and changes the default', function () {
