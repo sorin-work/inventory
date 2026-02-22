@@ -1,0 +1,62 @@
+<?php
+
+use App\Livewire\Categories;
+use App\Livewire\Locations;
+use App\Livewire\Products\Show;
+use App\Livewire\Suppliers;
+use App\Models\Category;
+use App\Models\Shop;
+use Livewire\Livewire;
+
+beforeEach(function () {
+    $this->shop = Shop::factory()->create();
+    $this->staff = staff($this->shop);
+});
+
+test('staff can not open owner pages', function (string $route) {
+    $this->actingAs($this->staff)->get(route($route))->assertForbidden();
+})->with(['reports.valuation']);
+
+test('owners can open owner pages', function (string $route) {
+    $this->actingAs(owner($this->shop))->get(route($route))->assertOk();
+})->with(['reports.valuation']);
+
+test('staff do not see owner links in the navigation', function () {
+    $this->actingAs($this->staff)->get(route('dashboard'))
+        ->assertOk()
+        ->assertDontSee('Valuation');
+});
+
+test('staff can not archive or delete products', function () {
+    $variant = variant($this->shop);
+
+    Livewire::actingAs($this->staff)
+        ->test(Show::class, ['product' => $variant->product])
+        ->call('archive')
+        ->assertForbidden();
+
+    Livewire::actingAs($this->staff)
+        ->test(Show::class, ['product' => $variant->product])
+        ->call('delete')
+        ->assertForbidden();
+
+    expect($variant->product->fresh()->archived_at)->toBeNull();
+});
+
+test('staff can not delete setup records', function () {
+    $this->actingAs($this->staff);
+    $category = Category::factory()->create(['shop_id' => $this->shop->id]);
+    $supplier = supplier($this->shop);
+    $location = otherLocation($this->shop);
+
+    Livewire::test(Categories\Index::class)->call('delete', $category->id)->assertForbidden();
+    Livewire::test(Suppliers\Index::class)->call('delete', $supplier->id)->assertForbidden();
+    Livewire::test(Locations\Index::class)->call('delete', $location->id)->assertForbidden();
+});
+
+test('staff do not see stock value on the dashboard', function () {
+    $this->actingAs($this->staff)->get(route('dashboard'))
+        ->assertOk()
+        ->assertDontSee('Stock value')
+        ->assertSee('Open orders');
+});
