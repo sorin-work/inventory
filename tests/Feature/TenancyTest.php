@@ -42,3 +42,12 @@ test('new records are stamped with the signed in shop', function () {
 
     expect($supplier->shop_id)->toBe($this->mine->id);
 });
+
+test('product exports only contain the shop\'s own products', function () {
+    variant($this->mine, ['sku' => 'MINE-1']);
+    variant($this->theirs, ['sku' => 'THEIRS-1']);
+
+    $csv = $this->actingAs($this->user)->get(route('products.export'))->streamedContent();
+
+    expect($csv)->toContain('MINE-1')->not->toContain('THEIRS-1');
+});
