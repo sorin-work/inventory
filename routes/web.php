@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('products', Products\Index::class)->name('products.index');
     Route::get('products/create', Products\Form::class)->name('products.create');
+    Route::get('products/import', Products\Import::class)->name('products.import');
     Route::get('products/export', ProductExportController::class)->name('products.export');
     Route::get('products/{product}', Products\Show::class)->name('products.show');
     Route::get('products/{product}/edit', Products\Form::class)->name('products.edit');

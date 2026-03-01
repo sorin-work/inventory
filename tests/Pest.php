@@ -57,3 +57,14 @@ function supplier(Shop $shop, array $attributes = []): Supplier
 {
     return Supplier::factory()->create(['shop_id' => $shop->id, ...$attributes]);
 }
+
+/**
+ * Writes CSV content to a temporary file and returns its path.
+ */
+function csvFile(string $contents): string
+{
+    $path = tempnam(sys_get_temp_dir(), 'csv');
+    file_put_contents($path, $contents);
+
+    return $path;
+}

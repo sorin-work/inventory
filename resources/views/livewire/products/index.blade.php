@@ -1,6 +1,7 @@
 <div>
     <x-page-header title="Products" description="Everything you stock, with what's on hand across all locations.">
         <x-slot name="actions">
+            <x-link-button variant="secondary" href="{{ route('products.import') }}">Import / export</x-link-button>
             <x-link-button href="{{ route('products.create') }}">New product</x-link-button>
         </x-slot>
     </x-page-header>
@@ -37,7 +38,7 @@
             @if ($search !== '' || $categoryId !== '' || $supplierId !== '' || $status !== 'active')
                 <x-empty-state title="No products match these filters" />
             @else
-                <x-empty-state title="No products yet" description="Add the things you sell to start tracking their stock.">
+                <x-empty-state title="No products yet" description="Add your first product or import a spreadsheet.">
                     <x-link-button href="{{ route('products.create') }}">New product</x-link-button>
                 </x-empty-state>
             @endif
