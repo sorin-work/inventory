@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductExportController;
+use App\Http\Controllers\ProductTemplateController;
 use App\Livewire\Categories;
 use App\Livewire\Dashboard;
 use App\Livewire\Locations;
@@ -21,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('products/create', Products\Form::class)->name('products.create');
     Route::get('products/import', Products\Import::class)->name('products.import');
     Route::get('products/export', ProductExportController::class)->name('products.export');
+    Route::get('products/template', ProductTemplateController::class)->name('products.template');
     Route::get('products/{product}', Products\Show::class)->name('products.show');
     Route::get('products/{product}/edit', Products\Form::class)->name('products.edit');
 

@@ -10,7 +10,7 @@
             <div class="mb-4 space-y-2 text-sm text-gray-600">
                 <p>One row per variant. Rows are matched to existing products by <strong>SKU</strong>: known SKUs are updated, new SKUs are added to the product with the same name or create a new product.</p>
                 <p>Categories and suppliers that don't exist yet are created. Stock quantities are not imported; receive or count stock afterwards so the ledger stays complete.</p>
-                <p>The easiest start is to export your products below and edit that file.</p>
+                <p><a href="{{ route('products.template') }}" class="text-indigo-600 hover:underline">Download a template</a> or export your products below and edit that.</p>
             </div>
 
             <form wire:submit="import" class="space-y-4">
