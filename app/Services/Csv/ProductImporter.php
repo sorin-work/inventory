@@ -227,7 +227,11 @@ class ProductImporter
                 'reorder_point' => $row['reorder_point'],
                 'reorder_quantity' => $row['reorder_quantity'],
             ], fn ($value) => $value !== null));
-            $variant->option_values = $this->optionValues($product, $row['options']) ?: $variant->option_values;
+
+            if ($row['options'] !== []) {
+                $variant->option_values = $this->optionValues($product, $row['options']);
+            }
+
             $variant->save();
 
             $this->products[Str::lower($product->name)] = $product;

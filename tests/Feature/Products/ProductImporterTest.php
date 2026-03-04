@@ -110,3 +110,12 @@ test('turns escaped formula cells back into text', function () {
 
     expect(Product::withoutGlobalScopes()->firstOrFail()->name)->toBe('=Fancy mug');
 });
+
+test('keeps variant options when a row leaves them out', function () {
+    $variant = variant($this->shop, ['sku' => 'MUG-GREEN', 'option_values' => ['Sea green']], ['name' => 'Mug', 'option_names' => ['Glaze']]);
+
+    import("product,sku,price\nMug,MUG-GREEN,30\n");
+
+    expect($variant->fresh()->option_values)->toBe(['Sea green'])
+        ->and($variant->fresh()->price_cents)->toBe(3000);
+});
