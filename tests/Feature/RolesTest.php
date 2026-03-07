@@ -15,16 +15,17 @@ beforeEach(function () {
 
 test('staff can not open owner pages', function (string $route) {
     $this->actingAs($this->staff)->get(route($route))->assertForbidden();
-})->with(['reports.valuation']);
+})->with(['reports.valuation', 'team.index', 'settings.shop']);
 
 test('owners can open owner pages', function (string $route) {
     $this->actingAs(owner($this->shop))->get(route($route))->assertOk();
-})->with(['reports.valuation']);
+})->with(['reports.valuation', 'team.index', 'settings.shop']);
 
 test('staff do not see owner links in the navigation', function () {
     $this->actingAs($this->staff)->get(route('dashboard'))
         ->assertOk()
-        ->assertDontSee('Valuation');
+        ->assertDontSee('Valuation')
+        ->assertDontSee('Shop settings');
 });
 
 test('staff can not archive or delete products', function () {
