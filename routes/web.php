@@ -11,6 +11,7 @@ use App\Livewire\PurchaseOrders;
 use App\Livewire\Reports;
 use App\Livewire\Stock;
 use App\Livewire\Suppliers;
+use App\Livewire\Team;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => auth()->check() ? redirect()->route('dashboard') : view('welcome'))->name('home');
@@ -51,6 +52,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('can:manage-shop')->group(function () {
         Route::get('reports/valuation', Reports\Valuation::class)->name('reports.valuation');
+        Route::get('team', Team\Index::class)->name('team.index');
     });
 });
 

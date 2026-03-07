@@ -42,11 +42,12 @@ new class extends Component
         ],
         [
             'title' => 'Setup',
-            'items' => [
+            'items' => array_values(array_filter([
                 ['label' => 'Suppliers', 'route' => 'suppliers.index', 'match' => 'suppliers.*'],
                 ['label' => 'Categories', 'route' => 'categories.index', 'match' => 'categories.*'],
                 ['label' => 'Locations', 'route' => 'locations.index', 'match' => 'locations.*'],
-            ],
+                $user->isOwner() ? ['label' => 'Team', 'route' => 'team.index', 'match' => 'team.*'] : null,
+            ])),
         ],
     ];
 @endphp
