@@ -4,6 +4,7 @@ use App\Enums\Role;
 use App\Livewire\Team\Index;
 use App\Models\Shop;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Livewire;
 
@@ -35,4 +36,35 @@ test('emails must be unique across all shops', function () {
         ->set('password', 'shelf-stacker')
         ->call('add')
         ->assertHasErrors('email');
+});
+
+test('changes roles but always keeps an owner', function () {
+    $maya = staff($this->shop);
+
+    Livewire::test(Index::class)->call('changeRole', $maya->id, 'owner');
+    expect($maya->fresh()->isOwner())->toBeTrue();
+
+    Livewire::test(Index::class)->call('changeRole', $maya->id, 'staff');
+    Livewire::test(Index::class)->call('changeRole', $this->owner->id, 'staff')->assertDispatched('notify');
+
+    expect($this->owner->fresh()->isOwner())->toBeTrue();
+});
+
+test('removes team members but not yourself', function () {
+    $maya = staff($this->shop);
+
+    Livewire::test(Index::class)
+        ->call('remove', $this->owner->id)
+        ->call('remove', $maya->id);
+
+    expect(User::pluck('id')->all())->toBe([$this->owner->id]);
+});
+
+test('can not touch users of another shop', function () {
+    $stranger = owner();
+
+    expect(fn () => Livewire::test(Index::class)->call('remove', $stranger->id))
+        ->toThrow(ModelNotFoundException::class);
+
+    expect($stranger->fresh())->not->toBeNull();
 });

@@ -48,12 +48,61 @@ class Index extends Component
         $this->reset('name', 'email', 'password', 'role');
     }
 
+    public function changeRole(int $id, string $role): void
+    {
+        $this->authorizeOwner();
+
+        $member = $this->member($id);
+        $role = Role::from($role);
+
+        if ($role === Role::Staff && $member->isOwner() && $this->ownerCount() === 1) {
+            $this->dispatch('notify', message: 'A shop needs at least one owner.');
+
+            return;
+        }
+
+        $member->update(['role' => $role]);
+        $this->notify("{$member->name} is now {$role->label()}.");
+    }
+
+    public function remove(int $id): void
+    {
+        $this->authorizeOwner();
+
+        $member = $this->member($id);
+
+        if ($member->is($this->user())) {
+            $this->dispatch('notify', message: "You can't remove yourself. Delete your account from your profile instead.");
+
+            return;
+        }
+
+        if ($member->isOwner() && $this->ownerCount() === 1) {
+            $this->dispatch('notify', message: 'A shop needs at least one owner.');
+
+            return;
+        }
+
+        $member->delete();
+        $this->notify("{$member->name} removed. Their stock history stays.");
+    }
+
     /**
      * @return Collection<int, User>
      */
     public function members(): Collection
     {
         return $this->shop()->users()->orderBy('role')->orderBy('name')->get();
+    }
+
+    private function member(int $id): User
+    {
+        return $this->shop()->users()->findOrFail($id);
+    }
+
+    private function ownerCount(): int
+    {
+        return $this->shop()->owners()->count();
     }
 
     public function render()

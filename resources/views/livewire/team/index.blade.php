@@ -12,7 +12,16 @@
                             </p>
                             <p class="truncate text-xs text-gray-500">{{ $member->email }}</p>
                         </div>
-                        <x-badge>{{ $member->role->label() }}</x-badge>
+                        <div class="flex items-center gap-3">
+                            <x-select wire:change="changeRole({{ $member->id }}, $event.target.value)" class="py-1 text-xs" aria-label="Role">
+                                @foreach (\App\Enums\Role::cases() as $role)
+                                    <option value="{{ $role->value }}" @selected($member->role === $role)>{{ $role->label() }}</option>
+                                @endforeach
+                            </x-select>
+                            @unless ($member->is(auth()->user()))
+                                <button wire:click="remove({{ $member->id }})" wire:confirm="Remove {{ $member->name }} from the shop?" class="text-sm text-rose-600 hover:underline">Remove</button>
+                            @endunless
+                        </div>
                     </li>
                 @endforeach
             </ul>
