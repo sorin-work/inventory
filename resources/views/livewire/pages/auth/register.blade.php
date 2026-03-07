@@ -2,8 +2,10 @@
 
 use App\Actions\RegisterShop;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -11,6 +13,7 @@ use Livewire\Volt\Component;
 new #[Layout('layouts.guest')] class extends Component
 {
     public string $shop_name = '';
+    public string $currency = 'USD';
     public string $name = '';
     public string $email = '';
     public string $password = '';
@@ -23,6 +26,7 @@ new #[Layout('layouts.guest')] class extends Component
     {
         $validated = $this->validate([
             'shop_name' => ['required', 'string', 'max:255'],
+            'currency' => ['required', Rule::in(array_keys(Money::currencies()))],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
@@ -43,6 +47,16 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-label for="shop_name" :value="__('Shop name')" />
             <x-text-input wire:model="shop_name" id="shop_name" class="block mt-1 w-full" type="text" name="shop_name" required autofocus autocomplete="organization" />
             <x-input-error :messages="$errors->get('shop_name')" class="mt-2" />
+        </div>
+
+        <div class="mt-4">
+            <x-input-label for="currency" :value="__('Currency')" />
+            <x-select wire:model="currency" id="currency" class="block mt-1 w-full" name="currency">
+                @foreach (\App\Support\Money::currencies() as $code => $label)
+                    <option value="{{ $code }}">{{ $code }} · {{ $label }}</option>
+                @endforeach
+            </x-select>
+            <x-input-error :messages="$errors->get('currency')" class="mt-2" />
         </div>
 
         <!-- Name -->

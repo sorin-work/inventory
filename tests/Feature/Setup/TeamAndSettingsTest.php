@@ -1,9 +1,11 @@
 <?php
 
 use App\Enums\Role;
+use App\Livewire\Settings\ShopSettings;
 use App\Livewire\Team\Index;
 use App\Models\Shop;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Livewire;
@@ -67,4 +69,15 @@ test('can not touch users of another shop', function () {
         ->toThrow(ModelNotFoundException::class);
 
     expect($stranger->fresh())->not->toBeNull();
+});
+
+test('updates the shop name and currency', function () {
+    Livewire::test(ShopSettings::class)
+        ->set('name', 'Harbour Lane Goods')
+        ->set('currency', 'EUR')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect($this->shop->fresh()->name)->toBe('Harbour Lane Goods')
+        ->and(Money::format(1250, $this->shop->fresh()->currency))->toBe('€12.50');
 });

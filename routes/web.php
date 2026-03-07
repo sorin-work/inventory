@@ -9,6 +9,7 @@ use App\Livewire\Movements;
 use App\Livewire\Products;
 use App\Livewire\PurchaseOrders;
 use App\Livewire\Reports;
+use App\Livewire\Settings\ShopSettings;
 use App\Livewire\Stock;
 use App\Livewire\Suppliers;
 use App\Livewire\Team;
@@ -53,6 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('can:manage-shop')->group(function () {
         Route::get('reports/valuation', Reports\Valuation::class)->name('reports.valuation');
         Route::get('team', Team\Index::class)->name('team.index');
+        Route::get('settings/shop', ShopSettings::class)->name('settings.shop');
     });
 });
 
