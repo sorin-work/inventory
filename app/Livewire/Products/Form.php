@@ -46,6 +46,8 @@ class Form extends Component
      */
     public array $variants = [];
 
+    public string $newCategory = '';
+
     public function mount(?Product $product = null): void
     {
         if ($product?->exists) {
@@ -184,6 +186,18 @@ class Form extends Component
         }
 
         $this->variants[$index]['sku'] = Sku::suggest($this->name, $this->variants[$index]['values'] ?? []);
+    }
+
+    public function createCategory(): void
+    {
+        $this->validate([
+            'newCategory' => ['required', 'string', 'max:100', Rule::unique('categories', 'name')->where('shop_id', $this->shop()->id)],
+        ], [], ['newCategory' => 'category']);
+
+        $category = Category::create(['name' => trim($this->newCategory)]);
+        $this->categoryId = (string) $category->id;
+        $this->newCategory = '';
+        $this->dispatch('category-created');
     }
 
     public function save(): void

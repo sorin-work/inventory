@@ -143,6 +143,13 @@ test('variants with stock history can not be removed', function () {
     expect($product->variants()->pluck('sku')->all())->toBe(['MUG-WHITE']);
 });
 
+test('a category can be created from the form', function () {
+    Livewire::test(Form::class)
+        ->set('newCategory', 'Candles')
+        ->call('createCategory')
+        ->assertSet('categoryId', (string) Category::sole()->id);
+});
+
 test('suggests a sku from the name', function () {
     Livewire::test(Form::class)
         ->set('name', 'Linen notebook A5')

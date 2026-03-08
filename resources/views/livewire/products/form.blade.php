@@ -16,12 +16,18 @@
                 </x-field>
 
                 <x-field label="Category" for="categoryId" error="categoryId">
-                    <x-select id="categoryId" wire:model="categoryId" class="block w-full">
-                        <option value="">No category</option>
-                        @foreach ($this->categories() as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </x-select>
+                    <div class="flex gap-2" x-data="{ adding: false }" x-on:category-created.window="adding = false">
+                        <x-select id="categoryId" wire:model="categoryId" class="block w-full" x-show="! adding">
+                            <option value="">No category</option>
+                            @foreach ($this->categories() as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </x-select>
+                        <x-text-input x-show="adding" style="display: none;" wire:model="newCategory" wire:keydown.enter.prevent="createCategory" placeholder="New category name" class="block w-full" />
+                        <x-secondary-button x-show="! adding" @click="adding = true">New</x-secondary-button>
+                        <x-secondary-button x-show="adding" style="display: none;" wire:click="createCategory">Add</x-secondary-button>
+                    </div>
+                    <x-input-error :messages="$errors->get('newCategory')" class="mt-1" />
                 </x-field>
 
                 <x-field label="Supplier" for="supplierId" error="supplierId" hint="Used when creating purchase orders from the low stock report">
