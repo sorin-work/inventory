@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Shop;
 use App\Support\CsvCell;
+use App\Support\Money;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -70,12 +71,12 @@ class ProductExporter
             $product->category?->name,
             $product->supplier?->name,
             $product->unit,
-            number_format($variant->price_cents / 100, 2, '.', ''),
+            Money::toDecimal($variant->price_cents),
             $variant->reorder_point,
             $variant->reorder_quantity,
             $product->description,
             $variant->onHand(),
-            number_format($variant->average_cost / 100, 2, '.', ''),
+            Money::toDecimal($variant->average_cost),
         ];
     }
 }

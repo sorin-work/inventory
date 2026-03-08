@@ -17,7 +17,7 @@ class Receive extends StockForm
 
     protected function variantSelected(ProductVariant $variant): void
     {
-        $this->unitCost = $variant->average_cost > 0 ? number_format($variant->average_cost / 100, 2, '.', '') : '';
+        $this->unitCost = $variant->average_cost > 0 ? Money::toDecimal($variant->average_cost) : '';
     }
 
     public function save(StockService $stock): void

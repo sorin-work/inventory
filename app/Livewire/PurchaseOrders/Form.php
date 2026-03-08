@@ -46,7 +46,7 @@ class Form extends Component
                 'label' => $line->variant->displayName(),
                 'sku' => $line->variant->sku,
                 'quantity' => (string) $line->quantity_ordered,
-                'unit_cost' => number_format($line->unit_cost_cents / 100, 2, '.', ''),
+                'unit_cost' => Money::toDecimal($line->unit_cost_cents),
             ])->all();
 
             return;
@@ -74,19 +74,13 @@ class Form extends Component
 
     protected function variantSelected(ProductVariant $variant): void
     {
-        $existing = collect($this->lines)->search(fn ($line) => $line['product_variant_id'] === $variant->id);
-
-        if ($existing !== false) {
-            $this->lines[$existing]['quantity'] = (string) ((int) $this->lines[$existing]['quantity'] + 1);
-        } else {
-            $this->lines[] = [
-                'product_variant_id' => $variant->id,
-                'label' => $variant->displayName(),
-                'sku' => $variant->sku,
-                'quantity' => (string) max(1, (int) $variant->reorder_quantity),
-                'unit_cost' => number_format($variant->average_cost / 100, 2, '.', ''),
-            ];
-        }
+        $this->lines[] = [
+            'product_variant_id' => $variant->id,
+            'label' => $variant->displayName(),
+            'sku' => $variant->sku,
+            'quantity' => (string) max(1, (int) $variant->reorder_quantity),
+            'unit_cost' => Money::toDecimal($variant->average_cost),
+        ];
 
         $this->variantId = null;
     }

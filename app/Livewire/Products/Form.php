@@ -71,7 +71,7 @@ class Form extends Component
                 'values' => array_values($v->option_values ?? []),
                 'sku' => $v->sku,
                 'barcode' => (string) $v->barcode,
-                'price' => number_format($v->price_cents / 100, 2, '.', ''),
+                'price' => Money::toDecimal($v->price_cents),
                 'reorder_point' => (string) $v->reorder_point,
                 'reorder_quantity' => (string) $v->reorder_quantity,
             ])->all();

@@ -17,7 +17,7 @@ class Sell extends StockForm
 
     protected function variantSelected(ProductVariant $variant): void
     {
-        $this->unitPrice = number_format($variant->price_cents / 100, 2, '.', '');
+        $this->unitPrice = Money::toDecimal($variant->price_cents);
     }
 
     public function save(StockService $stock): void

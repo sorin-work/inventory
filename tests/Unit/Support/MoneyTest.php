@@ -28,3 +28,9 @@ test('parses user input into cents', function (string $input, int $cents) {
 test('rejects input that is not an amount', function (string $input) {
     Money::parse($input);
 })->with(['', 'abc', '1.234', '-', '.'])->throws(InvalidArgumentException::class);
+
+test('turns cents into a plain decimal for forms and csv files', function () {
+    expect(Money::toDecimal(129999))->toBe('1299.99')
+        ->and(Money::toDecimal(7))->toBe('0.07')
+        ->and(Money::toDecimal(null))->toBe('0.00');
+});

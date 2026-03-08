@@ -74,4 +74,12 @@ final class Money
 
         return str_starts_with($clean, '-') ? -$cents : $cents;
     }
+
+    /**
+     * Cents as a plain decimal string for form inputs and CSV files.
+     */
+    public static function toDecimal(int|float|null $cents): string
+    {
+        return number_format(($cents ?? 0) / 100, 2, '.', '');
+    }
 }
