@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\ProductExportController;
 use App\Http\Controllers\ProductTemplateController;
 use App\Livewire\Categories;
@@ -16,6 +17,8 @@ use App\Livewire\Team;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => auth()->check() ? redirect()->route('dashboard') : view('welcome'))->name('home');
+
+Route::get('healthz', HealthController::class)->name('health');
 
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
