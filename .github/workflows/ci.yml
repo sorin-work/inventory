@@ -44,3 +44,45 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+
+  mysql:
+    # Tests run on SQLite; this makes sure the migrations and the demo seed
+    # also work on the MySQL version used in production.
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: inventory
+          MYSQL_USER: inventory
+          MYSQL_PASSWORD: inventory
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uinventory -pinventory --silent"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: inventory
+      DB_USERNAME: inventory
+      DB_PASSWORD: inventory
+      SEED_DEMO: 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_mysql, intl
+          coverage: none
+
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan migrate --force
+      - run: php artisan db:seed --force
+      - run: php artisan migrate:rollback --force
