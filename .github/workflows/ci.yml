@@ -86,3 +86,9 @@ jobs:
       - run: php artisan migrate --force
       - run: php artisan db:seed --force
       - run: php artisan migrate:rollback --force
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t inventory:ci .
