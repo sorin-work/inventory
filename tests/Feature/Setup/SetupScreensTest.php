@@ -109,3 +109,12 @@ test('locations with stock history or the last location can not be deleted', fun
 
     expect(Location::pluck('id')->all())->toBe([$main->id]);
 });
+
+test('deleting the default location makes another one the default', function () {
+    $main = mainLocation($this->shop);
+    $back = otherLocation($this->shop);
+
+    Livewire::test(Locations\Index::class)->call('delete', $main->id);
+
+    expect($back->fresh()->is_default)->toBeTrue();
+});

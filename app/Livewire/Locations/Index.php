@@ -109,7 +109,12 @@ class Index extends Component
             return;
         }
 
+        $wasDefault = $location->is_default;
         $location->delete();
+
+        if ($wasDefault) {
+            Location::query()->orderBy('id')->first()?->makeDefault();
+        }
 
         $this->notify("{$location->name} deleted.");
     }
