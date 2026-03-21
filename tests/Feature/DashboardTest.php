@@ -49,3 +49,14 @@ test('filtering the ledger up to a date includes that whole day', function () {
         ->set('to', today()->toDateString())
         ->assertSee('Evening delivery');
 });
+
+test('the movement ledger exports as csv', function () {
+    $variant = variant($this->shop, ['sku' => 'MUG-1']);
+    $this->stock->receive($variant, mainLocation($this->shop), 3, 1150, $this->user);
+
+    $csv = $this->get(route('movements.export', ['type' => 'receipt']))->assertOk()->streamedContent();
+
+    expect($csv)->toContain('date,type,sku')
+        ->toContain('receipt,MUG-1')
+        ->toContain('11.50');
+});

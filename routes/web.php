@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\MovementExportController;
 use App\Http\Controllers\ProductExportController;
 use App\Http\Controllers\ProductTemplateController;
 use App\Livewire\Categories;
@@ -37,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('stock/transfer', Stock\Transfer::class)->name('stock.transfer');
 
     Route::get('movements', Movements\Index::class)->name('movements.index');
+    Route::get('movements/export', MovementExportController::class)->name('movements.export');
 
     Route::get('purchase-orders', PurchaseOrders\Index::class)->name('purchase-orders.index');
     Route::get('purchase-orders/create', PurchaseOrders\Form::class)->name('purchase-orders.create');

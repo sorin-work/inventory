@@ -58,6 +58,16 @@ class Index extends Component
         return Location::query()->orderBy('name')->get();
     }
 
+    public function exportUrl(): string
+    {
+        return route('movements.export', array_filter([
+            'type' => $this->type,
+            'location' => $this->location,
+            'from' => $this->validDate($this->from) ? $this->from : null,
+            'to' => $this->validDate($this->to) ? $this->to : null,
+        ]));
+    }
+
     private function validDate(string $value): bool
     {
         return $value !== '';
