@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\DeleteShop;
 use App\Livewire\Actions\Logout;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
@@ -11,13 +12,25 @@ new class extends Component
     /**
      * Delete the currently authenticated user.
      */
-    public function deleteUser(Logout $logout): void
+    public function deleteUser(Logout $logout, DeleteShop $deleteShop): void
     {
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        $user = Auth::user();
+        $shop = $user->shop;
+        $lastOwner = $user->isOwner() && $shop->owners()->count() === 1;
+
+        $logout();
+
+        // The last owner leaving takes the shop with them; otherwise the
+        // staff left behind would have a shop nobody can manage.
+        if ($lastOwner) {
+            $deleteShop($shop);
+        } else {
+            $user->delete();
+        }
 
         $this->redirect('/', navigate: true);
     }
@@ -32,6 +45,12 @@ new class extends Component
         <p class="mt-1 text-sm text-gray-600">
             {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
         </p>
+
+        @if (auth()->user()->isOwner() && auth()->user()->shop->owners()->count() === 1)
+            <p class="mt-2 text-sm font-medium text-rose-700">
+                You are the only owner of {{ auth()->user()->shop->name }}. Deleting your account deletes the shop with all its products, stock history and team members. Make someone else an owner first if the shop should carry on.
+            </p>
+        @endif
     </header>
 
     <x-danger-button

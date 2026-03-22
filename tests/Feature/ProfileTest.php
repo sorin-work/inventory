@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Product;
+use App\Models\Shop;
 use App\Models\User;
 use Livewire\Volt\Volt;
 
@@ -86,4 +88,36 @@ test('correct password must be provided to delete account', function () {
         ->assertNoRedirect();
 
     $this->assertNotNull($user->fresh());
+});
+
+test('the last owner deleting their account deletes the shop and its team', function () {
+    $owner = User::factory()->create();
+    $staff = User::factory()->staff()->create(['shop_id' => $owner->shop_id]);
+    variant($owner->shop);
+
+    $this->actingAs($owner);
+
+    Volt::test('profile.delete-user-form')
+        ->set('password', 'password')
+        ->call('deleteUser')
+        ->assertRedirect('/');
+
+    expect(Shop::find($owner->shop_id))->toBeNull()
+        ->and($staff->fresh())->toBeNull()
+        ->and(Product::withoutGlobalScopes()->count())->toBe(0);
+});
+
+test('staff deleting their account leaves the shop alone', function () {
+    $owner = User::factory()->create();
+    $staff = User::factory()->staff()->create(['shop_id' => $owner->shop_id]);
+
+    $this->actingAs($staff);
+
+    Volt::test('profile.delete-user-form')
+        ->set('password', 'password')
+        ->call('deleteUser');
+
+    expect($staff->fresh())->toBeNull()
+        ->and($owner->fresh())->not->toBeNull()
+        ->and(Shop::find($owner->shop_id))->not->toBeNull();
 });
