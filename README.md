@@ -41,6 +41,20 @@ cost. One server-rendered Laravel app.
   suppliers, and reports problems per line. A dry run checks a file without
   saving. Files saved by Excel with semicolons and decimal commas work.
 
+## How stock and cost work
+
+Stock is kept per variant per location in `stock_levels`, and every change
+writes a row to `stock_movements` in the same transaction (with row locks,
+so two people selling the last unit can't both succeed). `StockService` is
+the only code that changes stock.
+
+Costs use the **weighted average** method. A receipt of `q` units at cost
+`c` when `n` units are on hand at average `a` gives a new average of
+`(n·a + q·c) / (n + q)`. Sales, adjustments and transfers take stock out at
+the current average and leave it unchanged. When stock has run out the next
+receipt sets the cost. Averages are stored in cents with four decimals so
+they don't drift; money everywhere else is integer cents.
+
 ## Stack
 
 | Part     | Tech                                                           |
