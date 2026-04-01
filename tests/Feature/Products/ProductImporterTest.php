@@ -105,6 +105,13 @@ test('a dry run reports what would happen without saving', function () {
         ->and(Category::withoutGlobalScopes()->count())->toBe(0);
 });
 
+test('reads files saved by excel with semicolons and a byte order mark', function () {
+    $result = import("\xEF\xBB\xBFProduct;SKU;Price\r\nKerze;KERZE-1;12.50\r\n");
+
+    expect($result->hasErrors())->toBeFalse()
+        ->and(ProductVariant::withoutGlobalScopes()->firstOrFail()->price_cents)->toBe(1250);
+});
+
 test('turns escaped formula cells back into text', function () {
     import("product,sku\n'=Fancy mug,MUG-EQ\n");
 

@@ -17,6 +17,12 @@ test('reads rows keyed by normalized header', function () {
         ->and($csv['rows'])->toBe([2 => ['product' => 'Mug', 'sku' => 'MUG-1', 'reorder_quantity' => '6']]);
 });
 
+test('detects semicolons and tabs', function () {
+    expect(CsvReader::detectDelimiter('product;sku;price'))->toBe(';')
+        ->and(CsvReader::detectDelimiter("product\tsku\tprice"))->toBe("\t")
+        ->and(CsvReader::detectDelimiter('product,sku,price'))->toBe(',');
+});
+
 test('strips a byte order mark and skips blank lines', function () {
     $csv = CsvReader::read(tempCsv("\xEF\xBB\xBFproduct,sku\r\n\r\nMug,MUG-1\r\n,\r\nBowl,BOWL-1\r\n"));
 

@@ -6,8 +6,8 @@ use RuntimeException;
 
 /**
  * Reads a CSV file into header-keyed rows. Handles the things spreadsheet
- * apps do to files: a UTF-8 byte order mark, Windows line endings and
- * blank lines.
+ * apps do to files: a UTF-8 byte order mark, semicolons instead of commas
+ * (Excel in most of Europe), Windows line endings and blank lines.
  */
 final class CsvReader
 {
@@ -30,7 +30,7 @@ final class CsvReader
             }
 
             $first = self::stripBom($first);
-            $delimiter = ',';
+            $delimiter = self::detectDelimiter($first);
             $headers = array_map(self::normalizeHeader(...), str_getcsv(rtrim($first, "\r\n"), $delimiter, '"', ''));
 
             $rows = [];
@@ -58,6 +58,19 @@ final class CsvReader
         } finally {
             fclose($handle);
         }
+    }
+
+    public static function detectDelimiter(string $headerLine): string
+    {
+        $candidates = [',' => 0, ';' => 0, "\t" => 0];
+
+        foreach (array_keys($candidates) as $delimiter) {
+            $candidates[$delimiter] = count(str_getcsv($headerLine, $delimiter, '"', ''));
+        }
+
+        arsort($candidates);
+
+        return array_key_first($candidates);
     }
 
     public static function normalizeHeader(string $header): string
