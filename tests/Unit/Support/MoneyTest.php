@@ -23,6 +23,9 @@ test('parses user input into cents', function (string $input, int $cents) {
     ['$4.20', 420],
     ['.5', 50],
     ['-3.10', -310],
+    ['12,50', 1250],
+    ['1.299,99', 129999],
+    ['€ 4,2', 420],
 ]);
 
 test('rejects input that is not an amount', function (string $input) {

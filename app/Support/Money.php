@@ -52,6 +52,8 @@ final class Money
 
     /**
      * Turns user input such as "12", "12.5", "1,299.99" or "$4.20" into cents.
+     * A comma followed by one or two digits at the end is a decimal comma, as
+     * written in most of Europe ("12,50", "1.299,99").
      */
     public static function parse(string|int|float|null $input): int
     {
@@ -63,7 +65,13 @@ final class Money
             return $input * 100;
         }
 
-        $clean = preg_replace('/[^0-9.\-]/', '', (string) $input);
+        $clean = preg_replace('/[^0-9.,\-]/', '', (string) $input);
+
+        if (preg_match('/,\d{1,2}$/', $clean)) {
+            $clean = str_replace(['.', ','], ['', '.'], $clean);
+        }
+
+        $clean = str_replace(',', '', $clean);
 
         if ($clean === '' || ! preg_match('/^-?\d*(\.\d{0,2})?$/', $clean) || $clean === '-' || $clean === '.') {
             throw new InvalidArgumentException("\"{$input}\" is not a valid amount.");
