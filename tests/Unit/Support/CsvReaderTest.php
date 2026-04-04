@@ -30,6 +30,12 @@ test('strips a byte order mark and skips blank lines', function () {
         ->and(array_keys($csv['rows']))->toBe([3, 5]);
 });
 
+test('keeps quoted commas and line breaks inside cells', function () {
+    $csv = CsvReader::read(tempCsv("product,description\n\"Mug, large\",\"Two\nlines\"\n"));
+
+    expect($csv['rows'][2])->toBe(['product' => 'Mug, large', 'description' => "Two\nlines"]);
+});
+
 test('refuses empty files', function () {
     CsvReader::read(tempCsv(''));
 })->throws(RuntimeException::class, 'empty');
