@@ -79,7 +79,13 @@ final class CsvReader
         $header = preg_replace('/[^a-z0-9]+/', '_', $header);
         $header = trim($header, '_');
 
-        return $header;
+        return match ($header) {
+            'name', 'product_name', 'title' => 'product',
+            'reorder_qty', 'reorder_amount' => 'reorder_quantity',
+            'reorder_level', 'min_stock' => 'reorder_point',
+            'ean', 'upc', 'gtin' => 'barcode',
+            default => $header,
+        };
     }
 
     private static function stripBom(string $line): string

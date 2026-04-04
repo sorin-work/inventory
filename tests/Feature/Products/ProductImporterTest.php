@@ -90,7 +90,7 @@ test('reports every problem with its line number and saves nothing', function ()
 });
 
 test('requires the product and sku columns', function () {
-    $result = import("product,price\nMug,10\n");
+    $result = import("name,price\nMug,10\n");
 
     expect($result->errors[1][0])->toBe('Missing required column: sku.');
 });

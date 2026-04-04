@@ -11,7 +11,7 @@ function tempCsv(string $contents): string
 }
 
 test('reads rows keyed by normalized header', function () {
-    $csv = CsvReader::read(tempCsv("Product,SKU,Reorder Quantity\nMug,MUG-1,6\n"));
+    $csv = CsvReader::read(tempCsv("Product Name,SKU,Reorder Qty\nMug,MUG-1,6\n"));
 
     expect($csv['headers'])->toBe(['product', 'sku', 'reorder_quantity'])
         ->and($csv['rows'])->toBe([2 => ['product' => 'Mug', 'sku' => 'MUG-1', 'reorder_quantity' => '6']]);
