@@ -55,6 +55,28 @@ the current average and leave it unchanged. When stock has run out the next
 receipt sets the cost. Averages are stored in cents with four decimals so
 they don't drift; money everywhere else is integer cents.
 
+## CSV import format
+
+One row per variant. `product` and `sku` are required; every other column
+is optional and can be in any order. Headers are matched loosely, so
+`Product Name`, `name` and `title` all work, as do `ean`/`upc` for the
+barcode and `reorder qty` for the reorder quantity.
+
+| Column                         | Notes                                                    |
+| ------------------------------ | -------------------------------------------------------- |
+| `product`                      | Rows with the same name become variants of one product   |
+| `sku`                          | Matches existing variants; letters, numbers, `-`, `_`, `.` |
+| `barcode`                      | EAN/UPC check digits are verified                        |
+| `option1_name`, `option1_value` | Up to three options, e.g. `Size` / `M`                  |
+| `category`, `supplier`         | Created if they don't exist yet                          |
+| `unit`                         | each, pack, box, pair, kg, g, l, ml or m                 |
+| `price`                        | `12.50`, `12,50` and `$12.50` all work                   |
+| `reorder_point`, `reorder_quantity` | Whole numbers                                       |
+| `description`                  | Free text                                                |
+
+`on_hand` and `average_cost` are included in exports but ignored on import.
+Files of up to 5000 rows are accepted.
+
 ## Stack
 
 | Part     | Tech                                                           |
