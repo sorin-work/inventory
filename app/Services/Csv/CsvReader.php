@@ -14,7 +14,7 @@ final class CsvReader
     /**
      * @return array{headers: list<string>, rows: array<int, array<string, string>>}
      */
-    public static function read(string $path): array
+    public static function read(string $path, int $maxRows = 5000): array
     {
         $handle = @fopen($path, 'r');
 
@@ -41,6 +41,10 @@ final class CsvReader
 
                 if ($cells === [null] || implode('', $cells) === '') {
                     continue;
+                }
+
+                if (count($rows) >= $maxRows) {
+                    throw new RuntimeException("The file has more than {$maxRows} rows. Split it into smaller files.");
                 }
 
                 $row = [];

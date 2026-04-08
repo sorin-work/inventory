@@ -36,6 +36,10 @@ test('keeps quoted commas and line breaks inside cells', function () {
     expect($csv['rows'][2])->toBe(['product' => 'Mug, large', 'description' => "Two\nlines"]);
 });
 
+test('refuses files over the row limit', function () {
+    CsvReader::read(tempCsv("product,sku\n".str_repeat("a,b\n", 4)), maxRows: 3);
+})->throws(RuntimeException::class, 'more than 3 rows');
+
 test('refuses empty files', function () {
     CsvReader::read(tempCsv(''));
 })->throws(RuntimeException::class, 'empty');
