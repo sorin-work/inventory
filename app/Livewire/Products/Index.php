@@ -59,7 +59,7 @@ class Index extends Component
             ->selectRaw('COALESCE(SUM(stock_levels.quantity), 0)');
 
         $query = Product::query()
-            ->with(['category', 'supplier', 'variants'])
+            ->with(['category', 'supplier', 'variants' => fn ($q) => $q->withOnHand()])
             ->withCount('variants')
             ->addSelect(['on_hand' => $onHand])
             ->when($this->search !== '', function (Builder $q) {
