@@ -45,6 +45,12 @@ class Index extends Component
         }
     }
 
+    public function clearFilters(): void
+    {
+        $this->reset('search', 'categoryId', 'supplierId', 'status');
+        $this->resetPage();
+    }
+
     public function products(): LengthAwarePaginator
     {
         $onHand = DB::table('stock_levels')

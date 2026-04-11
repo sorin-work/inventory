@@ -44,7 +44,9 @@
     <x-card :padding="false">
         @if ($products->isEmpty())
             @if ($search !== '' || $categoryId !== '' || $supplierId !== '' || $status !== 'active')
-                <x-empty-state title="No products match these filters" />
+                <x-empty-state title="No products match these filters">
+                    <x-secondary-button wire:click="clearFilters">Clear filters</x-secondary-button>
+                </x-empty-state>
             @else
                 <x-empty-state title="No products yet" description="Add your first product or import a spreadsheet.">
                     <x-link-button href="{{ route('products.create') }}">New product</x-link-button>
