@@ -35,9 +35,12 @@ class Index extends Component
     #[Url(except: 'active')]
     public string $status = 'active';
 
+    #[Url(except: 'name')]
+    public string $sort = 'name';
+
     public function updating(string $property): void
     {
-        if (in_array($property, ['search', 'categoryId', 'supplierId', 'status'], true)) {
+        if (in_array($property, ['search', 'categoryId', 'supplierId', 'status', 'sort'], true)) {
             $this->resetPage();
         }
     }
@@ -73,7 +76,13 @@ class Index extends Component
                 });
             });
 
-        return $query->orderBy('name')->paginate(25);
+        match ($this->sort) {
+            'stock' => $query->orderBy('on_hand')->orderBy('name'),
+            'newest' => $query->orderByDesc('created_at')->orderByDesc('id'),
+            default => $query->orderBy('name'),
+        };
+
+        return $query->paginate(25);
     }
 
     /**

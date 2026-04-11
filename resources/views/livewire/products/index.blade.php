@@ -23,12 +23,19 @@
             @endforeach
         </x-select>
 
-        <x-select wire:model.live="status">
-            <option value="active">Active</option>
-            <option value="low">Low stock</option>
-            <option value="archived">Archived</option>
-            <option value="all">All</option>
-        </x-select>
+        <div class="flex gap-2">
+            <x-select wire:model.live="status" class="flex-1">
+                <option value="active">Active</option>
+                <option value="low">Low stock</option>
+                <option value="archived">Archived</option>
+                <option value="all">All</option>
+            </x-select>
+            <x-select wire:model.live="sort" class="flex-1" aria-label="Sort">
+                <option value="name">Name</option>
+                <option value="stock">Lowest stock</option>
+                <option value="newest">Newest</option>
+            </x-select>
+        </div>
     </div>
 
     @php $products = $this->products(); @endphp
