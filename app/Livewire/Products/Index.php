@@ -64,7 +64,7 @@ class Index extends Component
                         ->orWhereHas('variants', fn (Builder $v) => $v->where('sku', 'like', $like)->orWhere('barcode', trim($this->search)));
                 });
             })
-            ->when($this->categoryId !== '', fn (Builder $q) => $q->where('category_id', $this->categoryId))
+            ->when($this->categoryId !== '', fn (Builder $q) => $q->where('category_id', $this->categoryId === 'none' ? null : $this->categoryId))
             ->when($this->supplierId !== '', fn (Builder $q) => $q->where('supplier_id', $this->supplierId))
             ->when($this->status === 'active', fn (Builder $q) => $q->whereNull('archived_at'))
             ->when($this->status === 'archived', fn (Builder $q) => $q->whereNotNull('archived_at'))

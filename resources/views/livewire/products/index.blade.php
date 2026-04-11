@@ -11,6 +11,7 @@
 
         <x-select wire:model.live="categoryId">
             <option value="">All categories</option>
+            <option value="none">No category</option>
             @foreach ($this->categories() as $category)
                 <option value="{{ $category->id }}">{{ $category->name }}</option>
             @endforeach
