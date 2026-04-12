@@ -118,6 +118,24 @@ test('turns escaped formula cells back into text', function () {
     expect(Product::withoutGlobalScopes()->firstOrFail()->name)->toBe('=Fancy mug');
 });
 
+test('never changes stock', function () {
+    $variant = variant($this->shop, ['sku' => 'MUG']);
+
+    import("product,sku,on_hand\nMug,MUG,500\n");
+
+    expect($variant->fresh()->onHand())->toBe(0);
+});
+
+test('only touches the importing shop', function () {
+    $other = Shop::factory()->create();
+    $theirs = variant($other, ['sku' => 'SHARED', 'price_cents' => 100]);
+
+    $result = import("product,sku,price\nMine,SHARED,9.99\n");
+
+    expect($result->created)->toBe(1)
+        ->and($theirs->fresh()->price_cents)->toBe(100);
+});
+
 test('keeps variant options when a row leaves them out', function () {
     $variant = variant($this->shop, ['sku' => 'MUG-GREEN', 'option_values' => ['Sea green']], ['name' => 'Mug', 'option_names' => ['Glaze']]);
 
