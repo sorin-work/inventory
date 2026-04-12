@@ -47,3 +47,19 @@ test('registering creates a shop owned by the new user with a first location', f
         ->and($user->shop->currency)->toBe('EUR')
         ->and($user->shop->locations()->sole()->is_default)->toBeTrue();
 });
+
+test('registration validates the shop and account details', function () {
+    User::factory()->create(['email' => 'taken@example.com']);
+
+    Volt::test('pages.auth.register')
+        ->set('shop_name', '')
+        ->set('currency', 'BTC')
+        ->set('name', 'Test User')
+        ->set('email', 'taken@example.com')
+        ->set('password', 'short')
+        ->set('password_confirmation', 'different')
+        ->call('register')
+        ->assertHasErrors(['shop_name', 'currency', 'email', 'password']);
+
+    $this->assertGuest();
+});
