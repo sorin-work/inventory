@@ -13,7 +13,7 @@ final class CsvCell
     {
         $value = (string) $value;
 
-        if ($value !== '' && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+        if ($value !== '' && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true) && ! is_numeric($value)) {
             return "'".$value;
         }
 
