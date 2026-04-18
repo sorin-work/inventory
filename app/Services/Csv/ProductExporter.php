@@ -12,13 +12,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProductExporter
 {
-    public function download(Shop $shop): StreamedResponse
+    public function download(Shop $shop, bool $includeArchived = false): StreamedResponse
     {
         $filename = Str::slug($shop->name).'-products-'.now()->format('Y-m-d').'.csv';
 
-        return response()->streamDownload(function () use ($shop) {
+        return response()->streamDownload(function () use ($shop, $includeArchived) {
             $out = fopen('php://output', 'w');
-            $this->write($out, $shop);
+            $this->write($out, $shop, $includeArchived);
             fclose($out);
         }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
@@ -26,14 +26,14 @@ class ProductExporter
     /**
      * @param  resource  $out
      */
-    public function write($out, Shop $shop): void
+    public function write($out, Shop $shop, bool $includeArchived = false): void
     {
         fputcsv($out, ProductCsv::COLUMNS, escape: '');
 
         Product::query()
             ->withoutGlobalScopes()
             ->where('shop_id', $shop->id)
-            ->whereNull('archived_at')
+            ->when(! $includeArchived, fn ($q) => $q->whereNull('archived_at'))
             ->with([
                 'category',
                 'supplier',

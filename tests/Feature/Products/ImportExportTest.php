@@ -34,6 +34,13 @@ test('exports products as csv', function () {
         ]);
 });
 
+test('leaves archived products out unless asked', function () {
+    variant($this->shop, ['sku' => 'OLD-1'], ['archived_at' => now()]);
+
+    expect($this->get(route('products.export'))->streamedContent())->not->toContain('OLD-1')
+        ->and($this->get(route('products.export', ['archived' => 1]))->streamedContent())->toContain('OLD-1');
+});
+
 test('escapes cells that would run as spreadsheet formulas', function () {
     variant($this->shop, ['sku' => 'EVIL-1'], ['name' => '=HYPERLINK("http://example.com")']);
 

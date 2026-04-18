@@ -63,7 +63,8 @@
         <x-card title="Export">
             <p class="text-sm text-gray-600">Download every product variant with its price, reorder settings, stock on hand and average cost.</p>
             <div class="mt-4 flex flex-col gap-2">
-                <a href="{{ route('products.export') }}" class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500">Export products</a>
+                <a href="{{ route('products.export') }}" class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500">Export active products</a>
+                <a href="{{ route('products.export', ['archived' => 1]) }}" class="text-center text-sm text-indigo-600 hover:underline">Include archived products</a>
             </div>
         </x-card>
     </div>

@@ -10,6 +10,6 @@ class ProductExportController extends Controller
 {
     public function __invoke(Request $request, ProductExporter $exporter): StreamedResponse
     {
-        return $exporter->download($request->user()->shop);
+        return $exporter->download($request->user()->shop, $request->boolean('archived'));
     }
 }
