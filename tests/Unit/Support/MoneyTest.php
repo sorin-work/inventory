@@ -5,6 +5,7 @@ use App\Support\Money;
 test('formats cents with the currency symbol', function () {
     expect(Money::format(123456))->toBe('$1,234.56')
         ->and(Money::format(5, 'EUR'))->toBe('€0.05')
+        ->and(Money::format(-2500, 'GBP'))->toBe('-£25.00')
         ->and(Money::format(null))->toBe('$0.00');
 });
 

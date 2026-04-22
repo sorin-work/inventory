@@ -46,8 +46,10 @@ final class Money
     {
         $cents ??= 0;
         $symbol = self::SYMBOLS[$currency] ?? $currency.' ';
+        $negative = $cents < 0;
+        $amount = number_format(abs($cents) / 100, 2, '.', ',');
 
-        return $symbol.number_format($cents / 100, 2, '.', ',');
+        return ($negative ? '-' : '').$symbol.$amount;
     }
 
     /**
