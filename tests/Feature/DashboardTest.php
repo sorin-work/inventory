@@ -40,6 +40,17 @@ test('the movement ledger filters by type, location and date', function () {
         ->set('location', '')->set('from', today()->subDay()->toDateString())->assertDontSee('Old delivery');
 });
 
+test('half typed dates in the ledger filter are ignored', function () {
+    $variant = variant($this->shop);
+    $this->stock->receive($variant, mainLocation($this->shop), 1, 100, null, 'Morning delivery');
+
+    Livewire::test(Index::class)
+        ->set('from', '2026-1')
+        ->set('to', 'not a date')
+        ->assertOk()
+        ->assertSee('Morning delivery');
+});
+
 test('filtering the ledger up to a date includes that whole day', function () {
     $variant = variant($this->shop);
     $this->travelTo(today()->setTime(18, 30));
