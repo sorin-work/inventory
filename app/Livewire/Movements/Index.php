@@ -44,7 +44,7 @@ class Index extends Component
     public function movements(): LengthAwarePaginator
     {
         return StockMovement::query()
-            ->with(['variant', 'location'])
+            ->with(['variant.product', 'location', 'user', 'purchaseOrder'])
             ->when(trim($this->search) !== '', function (Builder $q) {
                 $q->whereHas('variant', fn (Builder $v) => $v->search($this->search));
             })
