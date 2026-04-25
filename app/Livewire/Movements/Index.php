@@ -22,6 +22,9 @@ class Index extends Component
     use WithPagination, WithShop;
 
     #[Url(except: '')]
+    public string $search = '';
+
+    #[Url(except: '')]
     public string $type = '';
 
     #[Url(except: '')]
@@ -42,6 +45,9 @@ class Index extends Component
     {
         return StockMovement::query()
             ->with(['variant', 'location'])
+            ->when(trim($this->search) !== '', function (Builder $q) {
+                $q->whereHas('variant', fn (Builder $v) => $v->search($this->search));
+            })
             ->when($this->type !== '', fn (Builder $q) => $q->where('type', $this->type))
             ->when($this->location !== '', fn (Builder $q) => $q->where('location_id', $this->location))
             ->when($this->validDate($this->from), fn (Builder $q) => $q->where('created_at', '>=', Carbon::parse($this->from)->startOfDay()))

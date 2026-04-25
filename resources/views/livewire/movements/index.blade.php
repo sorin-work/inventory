@@ -5,7 +5,8 @@
         </x-slot>
     </x-page-header>
 
-    <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <x-text-input type="search" wire:model.live.debounce.300ms="search" placeholder="Product, SKU or barcode" />
         <x-select wire:model.live="type">
             <option value="">All types</option>
             @foreach (\App\Enums\MovementType::cases() as $movementType)
