@@ -70,7 +70,7 @@ class Dashboard extends Component
     {
         return StockMovement::query()
             ->with('variant.product', 'location', 'user')
-            ->orderByDesc('created_at')->orderByDesc('id')
+            ->latestFirst()
             ->limit(8)
             ->get();
     }

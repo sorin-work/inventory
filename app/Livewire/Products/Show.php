@@ -117,7 +117,7 @@ class Show extends Component
         return StockMovement::query()
             ->with(['variant', 'location', 'user', 'purchaseOrder'])
             ->whereIn('product_variant_id', $this->product->variants->pluck('id'))
-            ->orderByDesc('created_at')->orderByDesc('id')
+            ->latestFirst()
             ->paginate(20, pageName: 'ledger');
     }
 

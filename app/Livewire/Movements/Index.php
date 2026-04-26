@@ -52,7 +52,7 @@ class Index extends Component
             ->when($this->location !== '', fn (Builder $q) => $q->where('location_id', $this->location))
             ->when($this->validDate($this->from), fn (Builder $q) => $q->where('created_at', '>=', Carbon::parse($this->from)->startOfDay()))
             ->when($this->validDate($this->to), fn (Builder $q) => $q->where('created_at', '<=', Carbon::parse($this->to)->endOfDay()))
-            ->orderByDesc('created_at')->orderByDesc('id')
+            ->latestFirst()
             ->paginate(30);
     }
 

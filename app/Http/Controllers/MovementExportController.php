@@ -26,7 +26,7 @@ class MovementExportController extends Controller
             ->when($validated['location'] ?? null, fn ($q, $id) => $q->where('location_id', $id))
             ->when($validated['from'] ?? null, fn ($q, $from) => $q->where('created_at', '>=', Carbon::parse($from)->startOfDay()))
             ->when($validated['to'] ?? null, fn ($q, $to) => $q->where('created_at', '<=', Carbon::parse($to)->endOfDay()))
-            ->orderByDesc('created_at')->orderByDesc('id');
+            ->latestFirst();
 
         return response()->streamDownload(function () use ($query) {
             $out = fopen('php://output', 'w');

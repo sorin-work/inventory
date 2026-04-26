@@ -46,7 +46,7 @@ abstract class StockForm extends Component
             ->with('variant.product', 'location')
             ->whereIn('type', $this->recentTypes())
             ->where('user_id', $this->user()->id)
-            ->orderByDesc('created_at')->orderByDesc('id')
+            ->latestFirst()
             ->limit(5)
             ->get();
     }

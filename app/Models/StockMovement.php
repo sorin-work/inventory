@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AdjustmentReason;
 use App\Enums\MovementType;
 use App\Models\Concerns\BelongsToShop;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -89,5 +90,13 @@ class StockMovement extends Model
             ->where('transfer_id', $this->transfer_id)
             ->whereKeyNot($this->getKey())
             ->first();
+    }
+
+    /**
+     * @param  Builder<StockMovement>  $query
+     */
+    public function scopeLatestFirst(Builder $query): void
+    {
+        $query->orderByDesc('created_at')->orderByDesc('id');
     }
 }
