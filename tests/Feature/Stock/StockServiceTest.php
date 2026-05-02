@@ -134,6 +134,10 @@ test('transfers need two different locations and enough stock', function () {
         ->toThrow(StockException::class, 'Only 3');
 });
 
+test('quantities must be positive', function () {
+    $this->stock->receive($this->variant, $this->main, 0, 300);
+})->throws(StockException::class, 'at least 1');
+
 test('a failed change leaves stock and the ledger untouched', function () {
     $this->stock->receive($this->variant, $this->main, 2, 300);
 
