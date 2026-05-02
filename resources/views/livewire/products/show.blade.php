@@ -106,6 +106,31 @@
     @php $movements = $this->movements(); @endphp
 
     <x-card title="Movement ledger" :padding="false">
+        <x-slot name="actions">
+            @if ($product->variants->count() > 1)
+                <x-select wire:model.live="variantFilter" class="py-1 text-xs">
+                    <option value="">All variants</option>
+                    @foreach ($product->variants as $variant)
+                        <option value="{{ $variant->id }}">{{ $variant->optionLabel() ?: $variant->sku }}</option>
+                    @endforeach
+                </x-select>
+            @endif
+            <x-select wire:model.live="typeFilter" class="py-1 text-xs">
+                <option value="">All types</option>
+                @foreach (\App\Enums\MovementType::cases() as $type)
+                    <option value="{{ $type->value }}">{{ $type->label() }}</option>
+                @endforeach
+            </x-select>
+            @if ($locations->count() > 1)
+                <x-select wire:model.live="locationFilter" class="py-1 text-xs">
+                    <option value="">All locations</option>
+                    @foreach ($locations as $location)
+                        <option value="{{ $location->id }}">{{ $location->name }}</option>
+                    @endforeach
+                </x-select>
+            @endif
+        </x-slot>
+
         @include('livewire.movements.partials.table', ['movements' => $movements, 'showProduct' => $product->variants->count() > 1, 'variantOnly' => true])
     </x-card>
 </div>

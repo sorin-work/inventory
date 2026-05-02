@@ -62,6 +62,18 @@ test('the product page shows stock per location and the ledger', function () {
         ->assertSee('$138.00'); // 12 x $11.50
 });
 
+test('the ledger can be filtered by movement type', function () {
+    $variant = variant($this->shop);
+    $this->stock->receive($variant, mainLocation($this->shop), 5, 100, null, 'Delivery note 1');
+    $this->stock->sell($variant, mainLocation($this->shop), 1, null, null, 'Market sale');
+
+    Livewire::test(Show::class, ['product' => $variant->product])
+        ->assertSee('Delivery note 1')
+        ->set('typeFilter', 'sale')
+        ->assertSee('Market sale')
+        ->assertDontSee('Delivery note 1');
+});
+
 test('owners can archive and restore products', function () {
     $variant = variant($this->shop);
 

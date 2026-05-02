@@ -12,6 +12,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -22,9 +23,25 @@ class Show extends Component
 
     public Product $product;
 
+    #[Url(as: 'variant', except: '')]
+    public string $variantFilter = '';
+
+    #[Url(as: 'type', except: '')]
+    public string $typeFilter = '';
+
+    #[Url(as: 'location', except: '')]
+    public string $locationFilter = '';
+
     public function mount(Product $product): void
     {
         $this->product = $product;
+    }
+
+    public function updating(string $property): void
+    {
+        if (str_ends_with($property, 'Filter')) {
+            $this->resetPage();
+        }
     }
 
     public function archive(): void
@@ -117,6 +134,9 @@ class Show extends Component
         return StockMovement::query()
             ->with(['variant', 'location', 'user', 'purchaseOrder'])
             ->whereIn('product_variant_id', $this->product->variants->pluck('id'))
+            ->when($this->variantFilter !== '', fn ($q) => $q->where('product_variant_id', $this->variantFilter))
+            ->when($this->typeFilter !== '', fn ($q) => $q->where('type', $this->typeFilter))
+            ->when($this->locationFilter !== '', fn ($q) => $q->where('location_id', $this->locationFilter))
             ->latestFirst()
             ->paginate(20, pageName: 'ledger');
     }
