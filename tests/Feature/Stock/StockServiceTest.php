@@ -133,3 +133,16 @@ test('transfers need two different locations and enough stock', function () {
         ->and(fn () => $this->stock->transfer($this->variant, $this->main, $this->back, 4))
         ->toThrow(StockException::class, 'Only 3');
 });
+
+test('a failed change leaves stock and the ledger untouched', function () {
+    $this->stock->receive($this->variant, $this->main, 2, 300);
+
+    try {
+        $this->stock->transfer($this->variant, $this->main, $this->back, 5);
+    } catch (StockException) {
+    }
+
+    expect($this->variant->quantityAt($this->main))->toBe(2)
+        ->and($this->variant->quantityAt($this->back))->toBe(0)
+        ->and(StockMovement::count())->toBe(1);
+});
