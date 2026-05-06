@@ -37,4 +37,9 @@ class StockException extends DomainException
     {
         return new self('Pick two different locations to transfer between.');
     }
+
+    public static function archived(ProductVariant $variant): self
+    {
+        return new self("{$variant->product->name} is archived. Restore it before changing its stock.");
+    }
 }

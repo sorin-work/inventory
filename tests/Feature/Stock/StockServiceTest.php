@@ -138,6 +138,12 @@ test('quantities must be positive', function () {
     $this->stock->receive($this->variant, $this->main, 0, 300);
 })->throws(StockException::class, 'at least 1');
 
+test('archived products cannot change stock', function () {
+    $this->variant->product->update(['archived_at' => now()]);
+
+    $this->stock->receive($this->variant->fresh('product'), $this->main, 1, 100);
+})->throws(StockException::class, 'archived');
+
 test('a failed change leaves stock and the ledger untouched', function () {
     $this->stock->receive($this->variant, $this->main, 2, 300);
 

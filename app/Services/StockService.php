@@ -201,6 +201,9 @@ class StockService
             throw StockException::quantityMustBePositive();
         }
 
+        if ($variant->product->isArchived()) {
+            throw StockException::archived($variant);
+        }
     }
 
     private function lockVariant(ProductVariant $variant): ProductVariant
