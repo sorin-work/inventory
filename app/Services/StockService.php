@@ -201,6 +201,10 @@ class StockService
             throw StockException::quantityMustBePositive();
         }
 
+        if ($variant->shop_id !== $location->shop_id) {
+            throw StockException::wrongShop();
+        }
+
         if ($variant->product->isArchived()) {
             throw StockException::archived($variant);
         }

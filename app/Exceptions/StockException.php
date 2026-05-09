@@ -42,4 +42,9 @@ class StockException extends DomainException
     {
         return new self("{$variant->product->name} is archived. Restore it before changing its stock.");
     }
+
+    public static function wrongShop(): self
+    {
+        return new self('That product or location belongs to another shop.');
+    }
 }
