@@ -34,6 +34,15 @@ test('searches by name, sku and barcode', function () {
         ->set('search', '96385074')->assertSee('Stoneware mug')->assertDontSee('Brass pen');
 });
 
+test('search treats % and _ as plain characters', function () {
+    variant($this->shop, ['sku' => 'SOAP-1'], ['name' => '100% olive oil soap']);
+    variant($this->shop, ['sku' => 'PEN-1'], ['name' => 'Brass pen']);
+
+    Livewire::test(Index::class)
+        ->set('search', '100%')->assertSee('olive oil soap')->assertDontSee('Brass pen')
+        ->set('search', '%')->assertSee('olive oil soap')->assertDontSee('Brass pen');
+});
+
 test('filters by category, low stock and archived', function () {
     $candles = Category::factory()->create(['shop_id' => $this->shop->id]);
     variant($this->shop, ['reorder_point' => 5], ['name' => 'Fig candle', 'category_id' => $candles->id]);

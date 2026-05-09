@@ -62,12 +62,12 @@ class Index extends Component
             ->with(['category', 'supplier', 'variants' => fn ($q) => $q->withOnHand()])
             ->withCount('variants')
             ->addSelect(['on_hand' => $onHand])
-            ->when($this->search !== '', function (Builder $q) {
-                $like = '%'.trim($this->search).'%';
+            ->when(trim($this->search) !== '', function (Builder $q) {
+                $term = trim($this->search);
 
-                $q->where(function (Builder $q) use ($like) {
-                    $q->where('name', 'like', $like)
-                        ->orWhereHas('variants', fn (Builder $v) => $v->where('sku', 'like', $like)->orWhere('barcode', trim($this->search)));
+                $q->where(function (Builder $q) use ($term) {
+                    $q->whereContains('name', $term)
+                        ->orWhereHas('variants', fn (Builder $v) => $v->whereContains('sku', $term)->orWhere('barcode', $term));
                 });
             })
             ->when($this->categoryId !== '', fn (Builder $q) => $q->where('category_id', $this->categoryId === 'none' ? null : $this->categoryId))

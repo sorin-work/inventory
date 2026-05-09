@@ -101,11 +101,9 @@ class ProductVariant extends Model
         }
 
         $query->where(function (Builder $q) use ($term) {
-            $like = '%'.$term.'%';
-
-            $q->where('sku', 'like', $like)
+            $q->whereContains('sku', $term)
                 ->orWhere('barcode', $term)
-                ->orWhereHas('product', fn (Builder $p) => $p->where('name', 'like', $like));
+                ->orWhereHas('product', fn (Builder $p) => $p->whereContains('name', $term));
         });
     }
 
