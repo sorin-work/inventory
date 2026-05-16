@@ -4,7 +4,7 @@ namespace App\Livewire\Suppliers;
 
 use App\Livewire\Concerns\WithShop;
 use App\Models\Supplier;
-use Illuminate\Validation\Rule;
+use App\Rules\UniqueInShop;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -45,7 +45,7 @@ class Form extends Component
     public function save(): void
     {
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255', Rule::unique('suppliers', 'name')->where('shop_id', $this->shop()->id)->ignore($this->supplier?->id)],
+            'name' => ['required', 'string', 'max:255', new UniqueInShop('suppliers', 'name', $this->supplier?->id)],
             'contact_name' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],

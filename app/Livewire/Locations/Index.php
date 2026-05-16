@@ -5,11 +5,10 @@ namespace App\Livewire\Locations;
 use App\Livewire\Concerns\WithShop;
 use App\Models\Location;
 use App\Models\PurchaseOrder;
+use App\Rules\UniqueInShop;
 use App\Support\AverageCost;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Unique;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -143,9 +142,9 @@ class Index extends Component
             });
     }
 
-    private function uniqueName(?int $ignore = null): Unique
+    private function uniqueName(?int $ignore = null): UniqueInShop
     {
-        return Rule::unique('locations', 'name')->where('shop_id', $this->shop()->id)->ignore($ignore);
+        return new UniqueInShop('locations', 'name', $ignore);
     }
 
     public function render()

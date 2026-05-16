@@ -4,9 +4,8 @@ namespace App\Livewire\Categories;
 
 use App\Livewire\Concerns\WithShop;
 use App\Models\Category;
+use App\Rules\UniqueInShop;
 use Illuminate\Support\Collection;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Unique;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -82,9 +81,9 @@ class Index extends Component
         return Category::query()->withCount('products')->orderBy('name')->get();
     }
 
-    private function uniqueName(?int $ignore = null): Unique
+    private function uniqueName(?int $ignore = null): UniqueInShop
     {
-        return Rule::unique('categories', 'name')->where('shop_id', $this->shop()->id)->ignore($ignore);
+        return new UniqueInShop('categories', 'name', $ignore);
     }
 
     public function render()

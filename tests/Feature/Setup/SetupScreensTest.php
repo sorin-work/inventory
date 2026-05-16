@@ -59,7 +59,9 @@ test('manages categories', function () {
     $component = Livewire::test(Categories\Index::class)
         ->set('name', 'Candles')
         ->call('create')
-        ->assertHasNoErrors();
+        ->assertHasNoErrors()
+        ->set('name', 'candles')
+        ->call('create');
 
     expect(Category::pluck('name')->all())->toBe(['Candles']);
 

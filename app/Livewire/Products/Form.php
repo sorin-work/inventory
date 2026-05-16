@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Supplier;
+use App\Rules\UniqueInShop;
 use App\Support\Barcode;
 use App\Support\Money;
 use App\Support\Sku;
@@ -191,7 +192,7 @@ class Form extends Component
     public function createCategory(): void
     {
         $this->validate([
-            'newCategory' => ['required', 'string', 'max:100', Rule::unique('categories', 'name')->where('shop_id', $this->shop()->id)],
+            'newCategory' => ['required', 'string', 'max:100', new UniqueInShop('categories')],
         ], [], ['newCategory' => 'category']);
 
         $category = Category::create(['name' => trim($this->newCategory)]);
