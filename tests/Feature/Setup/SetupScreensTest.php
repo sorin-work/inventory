@@ -41,6 +41,14 @@ test('adds and edits a supplier', function () {
     expect($supplier->fresh()->phone)->toBe('+1 503 555 0178');
 });
 
+test('supplier names are unique within the shop', function () {
+    supplier($this->shop, ['name' => 'Fold Paper Goods']);
+    supplier(Shop::factory()->create(), ['name' => 'Leaf Lane Tea']);
+
+    Livewire::test(Suppliers\Form::class)->set('name', 'Fold Paper Goods')->call('save')->assertHasErrors('name');
+    Livewire::test(Suppliers\Form::class)->set('name', 'Leaf Lane Tea')->call('save')->assertHasNoErrors();
+});
+
 test('suppliers with purchase orders can not be deleted', function () {
     $used = supplier($this->shop);
     PurchaseOrder::factory()->create(['shop_id' => $this->shop->id, 'supplier_id' => $used->id]);
