@@ -12,3 +12,7 @@ test('suggests a sku from the name and option values', function () {
         ->and(Sku::suggest('Café crème mug'))->toBe('CAFE-CREME-MUG')
         ->and(Sku::suggest('Soy candle, cedar & sage'))->toBe('SOY-CANDLE-CEDAR-SAGE');
 });
+
+test('suggestions stay within 64 characters', function () {
+    expect(strlen(Sku::suggest(str_repeat('very long name ', 10))))->toBeLessThanOrEqual(64);
+});

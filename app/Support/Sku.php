@@ -31,6 +31,6 @@ final class Sku
         $parts = array_merge([$name], $options);
         $slug = Str::of(implode(' ', $parts))->ascii()->upper()->replaceMatches('/[^A-Z0-9]+/', '-')->trim('-');
 
-        return (string) $slug;
+        return Str::limit((string) $slug, 64, '');
     }
 }
