@@ -63,6 +63,16 @@ test('suppliers with purchase orders can not be deleted', function () {
         ->and($product->fresh()->supplier_id)->toBeNull();
 });
 
+test('searches suppliers', function () {
+    supplier($this->shop, ['name' => 'Fold Paper Goods']);
+    supplier($this->shop, ['name' => 'Leaf Lane Tea']);
+
+    Livewire::test(Suppliers\Index::class)
+        ->set('search', 'leaf')
+        ->assertSee('Leaf Lane Tea')
+        ->assertDontSee('Fold Paper Goods');
+});
+
 test('manages categories', function () {
     $component = Livewire::test(Categories\Index::class)
         ->set('name', 'Candles')

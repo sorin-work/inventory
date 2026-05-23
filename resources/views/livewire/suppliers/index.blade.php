@@ -7,10 +7,16 @@
         </x-slot>
     </x-page-header>
 
+    <div class="mb-4 max-w-sm">
+        <x-text-input type="search" wire:model.live.debounce.300ms="search" placeholder="Search suppliers" class="block w-full" />
+    </div>
+
     <x-card :padding="false">
         @if ($suppliers->isEmpty())
-            <x-empty-state title="No suppliers yet">
-                <x-link-button href="{{ route('suppliers.create') }}">New supplier</x-link-button>
+            <x-empty-state :title="$search === '' ? 'No suppliers yet' : 'No suppliers match'">
+                @if ($search === '')
+                    <x-link-button href="{{ route('suppliers.create') }}">New supplier</x-link-button>
+                @endif
             </x-empty-state>
         @else
             <div class="overflow-x-auto">
