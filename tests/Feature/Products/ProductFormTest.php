@@ -101,6 +101,17 @@ test('validates the product and its variants', function () {
     expect(Product::count())->toBe(1);
 });
 
+test('prices with more than two decimals are rejected', function () {
+    Livewire::test(Form::class)
+        ->set('name', 'Mug')
+        ->set('variants.0.sku', 'MUG')
+        ->set('variants.0.price', '12.999')
+        ->call('save')
+        ->assertHasErrors('variants.0.price');
+
+    expect(Product::count())->toBe(0);
+});
+
 test('variants on one product need their own skus', function () {
     Livewire::test(Form::class)
         ->set('name', 'Mug')

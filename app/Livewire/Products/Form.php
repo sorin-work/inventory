@@ -280,7 +280,7 @@ class Form extends Component
             'variants.*.values.*' => [$this->options === [] ? 'nullable' : 'required', 'string', 'max:60'],
             'variants.*.sku' => ['required', 'string', 'max:64', 'regex:'.Sku::PATTERN, 'distinct'],
             'variants.*.barcode' => ['nullable', 'string', 'max:48', 'distinct'],
-            'variants.*.price' => ['nullable', 'numeric', 'min:0', 'max:10000000'],
+            'variants.*.price' => ['nullable', 'numeric', 'min:0', 'max:10000000', 'decimal:0,2'],
             'variants.*.reorder_point' => ['nullable', 'integer', 'min:0', 'max:1000000'],
             'variants.*.reorder_quantity' => ['nullable', 'integer', 'min:1', 'max:1000000'],
         ];
