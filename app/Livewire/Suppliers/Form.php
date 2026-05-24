@@ -54,6 +54,8 @@ class Form extends Component
             'notes' => ['nullable', 'string', 'max:5000'],
         ], [], ['lead_time_days' => 'lead time']);
 
+        $validated = array_map(fn ($value) => is_string($value) && trim($value) === '' ? null : $value, $validated);
+
         $supplier = $this->supplier ?? new Supplier;
         $supplier->fill($validated)->save();
 

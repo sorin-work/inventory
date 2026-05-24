@@ -31,7 +31,7 @@ test('adds and edits a supplier', function () {
         ->assertRedirect(route('suppliers.index'));
 
     $supplier = Supplier::sole();
-    expect($supplier->lead_time_days)->toBe(10);
+    expect($supplier->lead_time_days)->toBe(10)->and($supplier->phone)->toBeNull();
 
     Livewire::test(Suppliers\Form::class, ['supplier' => $supplier])
         ->assertSet('name', 'Fold Paper Goods')
