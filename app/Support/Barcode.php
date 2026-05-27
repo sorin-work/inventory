@@ -17,7 +17,7 @@ final class Barcode
             return null;
         }
 
-        $barcode = trim($barcode);
+        $barcode = preg_replace('/\s+/', '', $barcode);
 
         return $barcode === '' ? null : $barcode;
     }

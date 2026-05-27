@@ -23,7 +23,8 @@ test('rejects codes with odd characters or the wrong length', function () {
         ->and(Barcode::isValid(str_repeat('9', 49)))->toBeFalse();
 });
 
-test('normalizes empty values', function () {
-    expect(Barcode::normalize('  '))->toBeNull()
+test('normalizes whitespace and empty values', function () {
+    expect(Barcode::normalize(' 4006 3813 33931 '))->toBe('4006381333931')
+        ->and(Barcode::normalize('  '))->toBeNull()
         ->and(Barcode::normalize(null))->toBeNull();
 });
