@@ -23,6 +23,15 @@
                 </button>
             @endforeach
         </nav>
+        <div class="flex gap-2">
+            <x-text-input type="search" wire:model.live.debounce.300ms="search" placeholder="PO number" class="w-36" />
+            <x-select wire:model.live="supplierId">
+                <option value="">All suppliers</option>
+                @foreach ($this->suppliers() as $supplier)
+                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                @endforeach
+            </x-select>
+        </div>
     </div>
 
     <x-card :padding="false">

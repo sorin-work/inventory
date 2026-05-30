@@ -49,7 +49,7 @@
                                     <a href="{{ route('products.index', ['supplier' => $supplier->id]) }}" wire:navigate class="text-indigo-600 hover:underline">{{ $supplier->products_count }}</a>
                                 </x-td>
                                 <x-td align="right" class="tabular-nums">
-                                    {{ $supplier->open_orders_count }}
+                                    <a href="{{ route('purchase-orders.index', ['supplier' => $supplier->id]) }}" wire:navigate class="text-indigo-600 hover:underline">{{ $supplier->open_orders_count }}</a>
                                 </x-td>
                                 <x-td align="right" class="whitespace-nowrap">
                                     <a href="{{ route('purchase-orders.create', ['supplier' => $supplier->id]) }}" wire:navigate class="text-sm text-indigo-600 hover:underline">Order</a>
