@@ -29,6 +29,8 @@ class Form extends Component
 
     public string $expectedOn = '';
 
+    public string $notes = '';
+
     /** @var list<array{product_variant_id: int, label: string, sku: string, quantity: string, unit_cost: string}> */
     public array $lines = [];
 
@@ -41,6 +43,7 @@ class Form extends Component
             $this->supplierId = (string) $purchaseOrder->supplier_id;
             $this->locationId = (string) $purchaseOrder->location_id;
             $this->expectedOn = (string) $purchaseOrder->expected_on?->toDateString();
+            $this->notes = (string) $purchaseOrder->notes;
             $this->lines = $purchaseOrder->lines()->with('variant.product')->get()->map(fn ($line) => [
                 'product_variant_id' => $line->product_variant_id,
                 'label' => $line->variant->displayName(),
@@ -99,6 +102,7 @@ class Form extends Component
             'supplierId' => ['required', Rule::exists('suppliers', 'id')->where('shop_id', $shopId)],
             'locationId' => ['required', Rule::exists('locations', 'id')->where('shop_id', $shopId)],
             'expectedOn' => ['nullable', 'date'],
+            'notes' => ['nullable', 'string', 'max:2000'],
             'lines' => ['required', 'array', 'min:1', 'max:200'],
             'lines.*.product_variant_id' => ['required', 'integer', Rule::exists('product_variants', 'id')->where('shop_id', $shopId)],
             'lines.*.quantity' => ['required', 'integer', 'min:1', 'max:1000000'],
@@ -122,6 +126,7 @@ class Form extends Component
 
         $details = [
             'expected_on' => $this->expectedOn ?: null,
+            'notes' => trim($this->notes) ?: null,
         ];
 
         try {

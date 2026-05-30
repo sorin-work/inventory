@@ -29,6 +29,9 @@
                     <x-text-input id="expectedOn" type="date" wire:model="expectedOn" class="block w-full" />
                 </x-field>
 
+                <x-field label="Notes" for="notes" error="notes" class="sm:col-span-3">
+                    <x-textarea id="notes" wire:model="notes" rows="2" class="block w-full" placeholder="Shown on the order, e.g. delivery instructions" />
+                </x-field>
             </div>
         </x-card>
 

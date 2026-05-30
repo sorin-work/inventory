@@ -34,6 +34,10 @@
         <x-stat label="Total" :value="$this->money($order->totalCents())" :hint="$order->lines->count().' '.Str::plural('line', $order->lines->count())" />
     </dl>
 
+    @if ($order->notes)
+        <p class="mb-6 max-w-3xl whitespace-pre-line rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-900">{{ $order->notes }}</p>
+    @endif
+
     <form wire:submit="saveReceipt">
         <x-card :title="$receiving ? 'Receive delivery into '.$order->location->name : 'Lines'" :padding="false" class="mb-6">
             <div class="overflow-x-auto">

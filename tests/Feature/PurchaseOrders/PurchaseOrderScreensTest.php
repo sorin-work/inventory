@@ -35,6 +35,7 @@ test('creates a draft order', function () {
         ->assertSet('lines.0.quantity', '12')
         ->assertSet('lines.0.unit_cost', '11.50')
         ->set('lines.0.unit_cost', '11.00')
+        ->set('notes', 'Leave at the back door')
         ->call('save')
         ->assertHasNoErrors()
         ->assertRedirect();
@@ -44,6 +45,7 @@ test('creates a draft order', function () {
     expect($order->status)->toBe(PurchaseOrderStatus::Draft)
         ->and($order->number)->toBe('PO-0001')
         ->and($order->user_id)->toBe($this->user->id)
+        ->and($order->notes)->toBe('Leave at the back door')
         ->and($order->lines->sole()->unit_cost_cents)->toBe(1100);
 });
 
