@@ -1,5 +1,6 @@
 @php
     $orders = $this->orders();
+    $counts = $this->counts();
     $tabs = ['open' => 'Open', 'draft' => 'Drafts', 'received' => 'Received', 'cancelled' => 'Cancelled', 'all' => 'All'];
 @endphp
 
@@ -20,6 +21,9 @@
                     'text-gray-600 hover:text-gray-900' => $status !== $value,
                 ])>
                     {{ $label }}
+                    @if (isset($counts[$value]) && $counts[$value] > 0)
+                        <span class="ms-1 rounded-full bg-gray-100 px-1.5 text-xs text-gray-600">{{ $counts[$value] }}</span>
+                    @endif
                 </button>
             @endforeach
         </nav>

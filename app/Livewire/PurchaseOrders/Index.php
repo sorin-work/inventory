@@ -2,6 +2,7 @@
 
 namespace App\Livewire\PurchaseOrders;
 
+use App\Enums\PurchaseOrderStatus;
 use App\Livewire\Concerns\WithShop;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
@@ -47,6 +48,22 @@ class Index extends Component
             ->orderBy($this->status === 'open' ? 'expected_on' : 'created_at', $this->status === 'open' ? 'asc' : 'desc')
             ->orderByDesc('id')
             ->paginate(25);
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    public function counts(): array
+    {
+        $byStatus = PurchaseOrder::query()
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        return [
+            'open' => (int) $byStatus->only(array_map(fn ($s) => $s->value, PurchaseOrderStatus::open()))->sum(),
+            'draft' => (int) ($byStatus[PurchaseOrderStatus::Draft->value] ?? 0),
+        ];
     }
 
     /**
