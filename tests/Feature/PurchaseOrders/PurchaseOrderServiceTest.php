@@ -119,6 +119,12 @@ test('orders with deliveries cannot be cancelled', function () {
     $this->orders->cancel($order->fresh('lines'));
 })->throws(PurchaseOrderException::class);
 
+test('only drafts can be edited', function () {
+    $order = $this->orders->markOrdered(draft());
+
+    $this->orders->updateDraft($order, []);
+})->throws(PurchaseOrderException::class, 'cannot be edited');
+
 test('low stock selections become one draft per supplier', function () {
     $other = supplier($this->shop, ['name' => 'Leaf Lane Tea']);
     $tea = variant($this->shop, ['sku' => 'TEA', 'average_cost' => 480.4], ['supplier_id' => $other->id]);
