@@ -49,6 +49,14 @@ test('creates a draft order', function () {
         ->and($order->lines->sole()->unit_cost_cents)->toBe(1100);
 });
 
+test('picking the same product twice adds to the line', function () {
+    Livewire::test(Form::class)
+        ->call('selectVariant', $this->mug->id)
+        ->call('selectVariant', $this->mug->id)
+        ->assertCount('lines', 1)
+        ->assertSet('lines.0.quantity', '13');
+});
+
 test('an order needs a supplier and lines', function () {
     Livewire::test(Form::class)
         ->call('save')

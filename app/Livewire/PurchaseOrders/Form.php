@@ -77,13 +77,19 @@ class Form extends Component
 
     protected function variantSelected(ProductVariant $variant): void
     {
-        $this->lines[] = [
-            'product_variant_id' => $variant->id,
-            'label' => $variant->displayName(),
-            'sku' => $variant->sku,
-            'quantity' => (string) max(1, (int) $variant->reorder_quantity),
-            'unit_cost' => Money::toDecimal($variant->average_cost),
-        ];
+        $existing = collect($this->lines)->search(fn ($line) => $line['product_variant_id'] === $variant->id);
+
+        if ($existing !== false) {
+            $this->lines[$existing]['quantity'] = (string) ((int) $this->lines[$existing]['quantity'] + 1);
+        } else {
+            $this->lines[] = [
+                'product_variant_id' => $variant->id,
+                'label' => $variant->displayName(),
+                'sku' => $variant->sku,
+                'quantity' => (string) max(1, (int) $variant->reorder_quantity),
+                'unit_cost' => Money::toDecimal($variant->average_cost),
+            ];
+        }
 
         $this->variantId = null;
     }

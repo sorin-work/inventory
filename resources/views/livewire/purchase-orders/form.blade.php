@@ -56,7 +56,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @foreach ($lines as $i => $line)
-                                <tr wire:key="line-{{ $i }}" class="align-top">
+                                <tr wire:key="line-{{ $line['product_variant_id'] }}" class="align-top">
                                     <x-td>
                                         <div class="font-medium text-gray-900">{{ $line['label'] }}</div>
                                         <div class="text-xs text-gray-500">{{ $line['sku'] }}</div>
