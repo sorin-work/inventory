@@ -209,6 +209,27 @@ class PurchaseOrderService
     private function replaceLines(PurchaseOrder $order, array $lines): void
     {
         $order->lines()->delete();
-        $order->lines()->createMany($lines);
+
+        // The same variant twice on one order is almost always a mistake;
+        // merge the quantities and keep the first cost.
+        $merged = [];
+
+        foreach ($lines as $line) {
+            $id = (int) $line['product_variant_id'];
+
+            if (isset($merged[$id])) {
+                $merged[$id]['quantity_ordered'] += (int) $line['quantity_ordered'];
+
+                continue;
+            }
+
+            $merged[$id] = [
+                'product_variant_id' => $id,
+                'quantity_ordered' => (int) $line['quantity_ordered'],
+                'unit_cost_cents' => (int) $line['unit_cost_cents'],
+            ];
+        }
+
+        $order->lines()->createMany(array_values($merged));
     }
 }

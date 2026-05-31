@@ -47,6 +47,17 @@ test('numbers are not reused after a draft is deleted', function () {
     expect(draft()->number)->toBe('PO-0002');
 });
 
+test('the same variant twice on an order is merged into one line', function () {
+    $order = draft([
+        ['product_variant_id' => $this->mug->id, 'quantity_ordered' => 3, 'unit_cost_cents' => 1100],
+        ['product_variant_id' => $this->mug->id, 'quantity_ordered' => 2, 'unit_cost_cents' => 1200],
+    ]);
+
+    expect($order->lines)->toHaveCount(1)
+        ->and($order->lines->first()->quantity_ordered)->toBe(5)
+        ->and($order->lines->first()->unit_cost_cents)->toBe(1100);
+});
+
 test('placing an order needs at least one line', function () {
     $order = draft();
     $order->lines()->delete();
