@@ -154,6 +154,10 @@ test('a transfer needs two different locations', function () {
         ->assertHasErrors('toLocationId');
 });
 
+test('the transfer page explains that a second location is needed', function () {
+    $this->get(route('stock.transfer'))->assertSee('You need two locations');
+});
+
 test('shows your recent entries', function () {
     app(StockService::class)->receive($this->variant, $this->main, 4, 100, $this->user);
 
