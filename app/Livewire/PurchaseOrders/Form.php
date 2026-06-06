@@ -162,6 +162,17 @@ class Form extends Component
         $this->redirectRoute('purchase-orders.show', $order, navigate: true);
     }
 
+    public function total(): int
+    {
+        return (int) collect($this->lines)->sum(function ($line) {
+            try {
+                return (int) $line['quantity'] * Money::parse($line['unit_cost']);
+            } catch (\InvalidArgumentException) {
+                return 0;
+            }
+        });
+    }
+
     /**
      * @return Collection<int, Supplier>
      */

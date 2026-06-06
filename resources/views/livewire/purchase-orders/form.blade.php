@@ -81,6 +81,13 @@
                                 </tr>
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr class="border-t border-gray-200">
+                                <td colspan="3" class="px-4 py-3 text-right text-sm font-medium text-gray-700">Total</td>
+                                <td class="px-4 py-3 text-right text-sm font-semibold tabular-nums text-gray-900">{{ $this->money($this->total()) }}</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             @endif
