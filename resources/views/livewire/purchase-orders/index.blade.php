@@ -53,6 +53,7 @@
                             <x-th>Status</x-th>
                             <x-th>Deliver to</x-th>
                             <x-th>Expected</x-th>
+                            <x-th align="right">Received</x-th>
                             <x-th align="right">Total</x-th>
                         </tr>
                     </thead>
@@ -69,6 +70,7 @@
                                         <span class="text-xs">(late)</span>
                                     @endif
                                 </x-td>
+                                <x-td align="right" class="tabular-nums text-gray-600">{{ $order->lines->sum('quantity_received') }} / {{ $order->lines->sum('quantity_ordered') }}</x-td>
                                 <x-td align="right" class="tabular-nums text-gray-900">{{ $this->money($order->totalCents()) }}</x-td>
                             </tr>
                         @endforeach
