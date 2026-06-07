@@ -57,8 +57,8 @@
                                 <a href="{{ route('purchase-orders.show', $order) }}" wire:navigate class="font-medium text-gray-900 hover:underline">{{ $order->number }}</a>
                                 <span class="text-gray-500">· {{ $order->supplier->name }}</span>
                             </div>
-                            <span class="ms-3 shrink-0 text-xs text-gray-500">
-                                {{ $order->expected_on ? 'Due '.$order->expected_on->format('M j') : $order->status->label() }}
+                            <span class="ms-3 shrink-0 text-xs {{ $order->isOverdue() ? 'font-medium text-rose-700' : 'text-gray-500' }}">
+                                {{ $order->expected_on ? ($order->isOverdue() ? 'Late, due ' : 'Due ').$order->expected_on->format('M j') : $order->status->label() }}
                             </span>
                         </li>
                     @endforeach
