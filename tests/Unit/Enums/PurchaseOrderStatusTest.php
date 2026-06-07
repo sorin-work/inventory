@@ -14,3 +14,10 @@ test('only drafts can be edited', function () {
         expect($status->isEditable())->toBe($status === PurchaseOrderStatus::Draft);
     }
 });
+
+test('every status has a label and badge', function () {
+    foreach (PurchaseOrderStatus::cases() as $status) {
+        expect($status->label())->not->toBeEmpty()
+            ->and($status->badgeClasses())->toContain('ring-');
+    }
+});
