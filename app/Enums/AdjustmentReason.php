@@ -26,6 +26,14 @@ enum AdjustmentReason: string
     }
 
     /**
+     * Reasons that need a note so the ledger explains itself later.
+     */
+    public function requiresNote(): bool
+    {
+        return $this === self::Other;
+    }
+
+    /**
      * @return array<string, string>
      */
     public static function options(): array

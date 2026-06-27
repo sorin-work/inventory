@@ -48,6 +48,12 @@ class Adjust extends StockForm
 
         $reason = AdjustmentReason::from($this->mode === 'count' ? AdjustmentReason::StockCount->value : $this->reason);
 
+        if ($reason->requiresNote() && $this->nullableNote() === null) {
+            $this->addError('note', 'Add a note explaining the adjustment.');
+
+            return;
+        }
+
         $variant = $this->variant();
         $location = $this->location();
 

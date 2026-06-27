@@ -104,6 +104,17 @@ test('adjusts stock with a reason', function () {
         ->and($this->variant->quantityAt($this->main))->toBe(3);
 });
 
+test('the "other" reason needs a note', function () {
+    app(StockService::class)->receive($this->variant, $this->main, 5, 1150);
+
+    Livewire::test(Adjust::class)
+        ->call('selectVariant', $this->variant->id)
+        ->set('change', '-1')
+        ->set('reason', 'other')
+        ->call('save')
+        ->assertHasErrors('note');
+});
+
 test('a zero change is refused', function () {
     Livewire::test(Adjust::class)
         ->call('selectVariant', $this->variant->id)
