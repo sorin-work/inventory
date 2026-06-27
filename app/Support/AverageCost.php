@@ -27,9 +27,9 @@ final class AverageCost
             throw new InvalidArgumentException('Unit cost cannot be negative.');
         }
 
-        // With nothing on hand there is no existing value to blend with,
-        // so the new units set the cost.
-        if ($onHand === 0) {
+        // With nothing (or less than nothing) on hand there is no existing
+        // value to blend with, so the new units set the cost.
+        if ($onHand <= 0) {
             return round($unitCost, 4);
         }
 

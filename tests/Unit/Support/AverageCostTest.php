@@ -20,6 +20,10 @@ test('keeps four decimals so repeated receipts do not drift', function () {
     expect($avg)->toBe(114.2857);
 });
 
+test('negative stock on hand resets the cost to the new units', function () {
+    expect(AverageCost::afterReceipt(-2, 900, 5, 400))->toBe(400.0);
+});
+
 test('rejects receipts that make no sense', function (int $qty, float $cost) {
     AverageCost::afterReceipt(5, 100, $qty, $cost);
 })->with([[0, 100], [-1, 100], [3, -1]])->throws(InvalidArgumentException::class);
