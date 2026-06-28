@@ -9,6 +9,10 @@ test('formats cents with the currency symbol', function () {
         ->and(Money::format(null))->toBe('$0.00');
 });
 
+test('falls back to the currency code for unknown currencies', function () {
+    expect(Money::format(1000, 'XYZ'))->toBe('XYZ 10.00');
+});
+
 test('formats fractional cents from average costs', function () {
     expect(Money::format(1234.5678))->toBe('$12.35');
 });
