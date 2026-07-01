@@ -35,6 +35,8 @@ class Index extends Component
     {
         $this->authorizeOwner();
 
+        $this->email = strtolower(trim($this->email));
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],

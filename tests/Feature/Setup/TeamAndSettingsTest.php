@@ -18,7 +18,7 @@ beforeEach(function () {
 test('adds a staff member who can then sign in', function () {
     Livewire::test(Index::class)
         ->set('name', 'Maya Chen')
-        ->set('email', 'maya@example.com')
+        ->set('email', 'Maya@Example.com')
         ->set('password', 'shelf-stacker')
         ->call('add')
         ->assertHasNoErrors();
