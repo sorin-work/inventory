@@ -88,11 +88,11 @@
                             <x-td align="right" class="tabular-nums text-gray-700">{{ $this->money($variant->average_cost) }}</x-td>
                             <x-td align="right" class="whitespace-nowrap text-xs">
                                 @unless ($product->isArchived())
-                                    <a href="{{ route('stock.receive') }}" wire:navigate class="text-indigo-600 hover:underline">Receive</a>
-                                    <a href="{{ route('stock.sell') }}" wire:navigate class="ms-2 text-indigo-600 hover:underline">Sell</a>
-                                    <a href="{{ route('stock.adjust') }}" wire:navigate class="ms-2 text-indigo-600 hover:underline">Adjust</a>
+                                    <a href="{{ route('stock.receive', ['variant' => $variant->id]) }}" wire:navigate class="text-indigo-600 hover:underline">Receive</a>
+                                    <a href="{{ route('stock.sell', ['variant' => $variant->id]) }}" wire:navigate class="ms-2 text-indigo-600 hover:underline">Sell</a>
+                                    <a href="{{ route('stock.adjust', ['variant' => $variant->id]) }}" wire:navigate class="ms-2 text-indigo-600 hover:underline">Adjust</a>
                                     @if ($locations->count() > 1)
-                                        <a href="{{ route('stock.transfer') }}" wire:navigate class="ms-2 text-indigo-600 hover:underline">Transfer</a>
+                                        <a href="{{ route('stock.transfer', ['variant' => $variant->id]) }}" wire:navigate class="ms-2 text-indigo-600 hover:underline">Transfer</a>
                                     @endif
                                 @endunless
                             </x-td>

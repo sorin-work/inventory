@@ -17,6 +17,15 @@ trait PicksVariant
 
     public ?int $variantId = null;
 
+    public function mountPicksVariant(): void
+    {
+        $id = request()->integer('variant');
+
+        if ($id > 0 && $this->activeVariants()->whereKey($id)->exists()) {
+            $this->selectVariant($id);
+        }
+    }
+
     public function updatedSearch(): void
     {
         $match = $this->activeVariants()->whereCode($this->search)->first();

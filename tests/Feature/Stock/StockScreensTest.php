@@ -37,6 +37,12 @@ test('archived products can not be picked', function () {
         ->assertSet('variantId', null);
 });
 
+test('the variant can be passed in the url', function () {
+    $this->get(route('stock.receive', ['variant' => $this->variant->id]))
+        ->assertOk()
+        ->assertSee('Stoneware mug');
+});
+
 test('receives stock', function () {
     Livewire::test(Receive::class)
         ->call('selectVariant', $this->variant->id)
