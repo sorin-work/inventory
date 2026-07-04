@@ -63,6 +63,14 @@ test('receives stock', function () {
         ->and($movement->location_id)->toBe($this->main->id);
 });
 
+test('prefills the unit cost from the last receipt', function () {
+    app(StockService::class)->receive($this->variant, $this->main, 1, 1234);
+
+    Livewire::test(Receive::class)
+        ->call('selectVariant', $this->variant->id)
+        ->assertSet('unitCost', '12.34');
+});
+
 test('receiving validates its fields', function () {
     Livewire::test(Receive::class)
         ->set('quantity', '0')
