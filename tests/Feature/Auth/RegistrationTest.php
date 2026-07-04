@@ -34,7 +34,7 @@ test('registering creates a shop owned by the new user with a first location', f
         ->set('shop_name', 'Harbour Lane Goods')
         ->set('currency', 'EUR')
         ->set('name', 'Test User')
-        ->set('email', 'test@example.com')
+        ->set('email', 'Test@Example.com')
         ->set('password', 'password')
         ->set('password_confirmation', 'password')
         ->call('register')

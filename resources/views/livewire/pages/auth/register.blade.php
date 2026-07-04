@@ -24,6 +24,8 @@ new #[Layout('layouts.guest')] class extends Component
      */
     public function register(RegisterShop $registerShop): void
     {
+        $this->email = strtolower(trim($this->email));
+
         $validated = $this->validate([
             'shop_name' => ['required', 'string', 'max:255'],
             'currency' => ['required', Rule::in(array_keys(Money::currencies()))],
