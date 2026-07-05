@@ -151,15 +151,14 @@ test('records a stock count', function () {
         ->and($this->variant->quantityAt($this->main))->toBe(7);
 });
 
-test('transfers stock', function () {
+test('transfers stock and can swap the locations', function () {
     $back = otherLocation($this->shop, 'Back room');
     app(StockService::class)->receive($this->variant, $back, 8, 1150);
 
     Livewire::test(Transfer::class)
         ->assertSet('locationId', $this->main->id)
         ->assertSet('toLocationId', $back->id)
-        ->set('locationId', $back->id)
-        ->set('toLocationId', $this->main->id)
+        ->call('swap')
         ->call('selectVariant', $this->variant->id)
         ->set('quantity', '3')
         ->call('save')

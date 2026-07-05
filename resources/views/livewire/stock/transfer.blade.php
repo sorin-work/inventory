@@ -11,8 +11,10 @@
                 <form wire:submit="save" class="space-y-5">
                     @include('livewire.stock.partials.variant-picker')
 
-                    <div class="grid items-end gap-4 sm:grid-cols-[1fr_1fr_8rem]">
+                    <div class="grid items-end gap-4 sm:grid-cols-[1fr_auto_1fr_8rem]">
                         @include('livewire.stock.partials.location-select', ['field' => 'locationId', 'label' => 'From'])
+
+                        <button type="button" wire:click="swap" class="mb-0.5 rounded-md border border-gray-300 px-2 py-2 text-gray-600 hover:bg-gray-50" title="Swap locations">⇄</button>
 
                         @include('livewire.stock.partials.location-select', ['field' => 'toLocationId', 'label' => 'To'])
 

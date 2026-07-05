@@ -20,6 +20,11 @@ class Transfer extends StockForm
         $this->toLocationId = $this->locations()->firstWhere('id', '!=', $this->locationId)?->id;
     }
 
+    public function swap(): void
+    {
+        [$this->locationId, $this->toLocationId] = [$this->toLocationId, $this->locationId];
+    }
+
     public function save(StockService $stock): void
     {
         $this->validate([
