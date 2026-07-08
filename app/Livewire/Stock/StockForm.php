@@ -26,7 +26,20 @@ abstract class StockForm extends Component
 
     public function mount(): void
     {
-        $this->locationId = $this->shop()->defaultLocation()?->id;
+        $remembered = session('stock.location');
+
+        $this->locationId = $remembered && Location::query()->whereKey($remembered)->exists()
+            ? (int) $remembered
+            : $this->shop()->defaultLocation()?->id;
+    }
+
+    /**
+     * The next stock screen opens at the location used last, which saves a
+     * click when working through a delivery in the back room.
+     */
+    protected function rememberLocation(): void
+    {
+        session(['stock.location' => $this->locationId]);
     }
 
     /**
@@ -73,6 +86,7 @@ abstract class StockForm extends Component
     {
         try {
             $callback();
+            $this->rememberLocation();
 
             return true;
         } catch (StockException $e) {

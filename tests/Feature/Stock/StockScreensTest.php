@@ -187,3 +187,17 @@ test('shows your recent entries', function () {
 
     Livewire::test(Receive::class)->assertSee('Your recent entries')->assertSee('+4');
 });
+
+test('the stock screens remember the last location used', function () {
+    $back = otherLocation($this->shop, 'Back room');
+
+    Livewire::test(Receive::class)
+        ->assertSet('locationId', $this->main->id)
+        ->call('selectVariant', $this->variant->id)
+        ->set('locationId', $back->id)
+        ->set('unitCost', '10')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    Livewire::test(Sell::class)->assertSet('locationId', $back->id);
+});
