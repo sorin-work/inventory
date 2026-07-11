@@ -6,6 +6,7 @@ use App\Livewire\Products\Show;
 use App\Livewire\Suppliers;
 use App\Models\Category;
 use App\Models\Shop;
+use App\Services\StockService;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -60,4 +61,19 @@ test('staff do not see stock value on the dashboard', function () {
         ->assertOk()
         ->assertDontSee('Stock value')
         ->assertSee('Open orders');
+});
+
+test('staff do not see what stock is worth on the product and locations pages', function () {
+    $variant = variant($this->shop, [], ['name' => 'Stoneware mug']);
+    app(StockService::class)->receive($variant, mainLocation($this->shop), 4, 1150);
+
+    $this->actingAs($this->staff);
+
+    $this->get(route('products.show', $variant->product))->assertOk()->assertDontSee('$46.00');
+    $this->get(route('locations.index'))->assertOk()->assertDontSee('$46.00');
+
+    $this->actingAs(owner($this->shop));
+
+    $this->get(route('products.show', $variant->product))->assertSee('$46.00');
+    $this->get(route('locations.index'))->assertSee('$46.00');
 });

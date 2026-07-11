@@ -32,7 +32,10 @@
                                         <x-badge color="bg-indigo-50 text-indigo-700 ring-indigo-600/20" class="ms-1">Default</x-badge>
                                     @endif
                                     <p class="text-xs text-gray-500">
-                                        {{ number_format($location->units) }} units · {{ $this->money($location->value_cents) }}
+                                        {{ number_format($location->units) }} units
+                                        @can('manage-shop')
+                                            · {{ $this->money($location->value_cents) }}
+                                        @endcan
                                     </p>
                                 </div>
                                 <div class="flex gap-3 text-sm">

@@ -39,7 +39,7 @@
     <dl class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <x-stat label="On hand" :value="number_format($product->variants->sum(fn ($v) => array_sum($matrix[$v->id] ?? []))).' '.$product->unit" />
         <x-stat label="On order" :value="number_format(array_sum($onOrder))" />
-        <x-stat label="Stock value" :value="$this->money($this->stockValue())" hint="At average cost" />
+        <x-stat label="Stock value" :value="$isOwner ? $this->money($this->stockValue()) : '—'" hint="At average cost" />
         <x-stat label="Supplier" :value="$product->supplier?->name ?? '—'" />
     </dl>
 
