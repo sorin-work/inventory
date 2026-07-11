@@ -34,6 +34,7 @@
                                     <span class="block truncate font-medium text-gray-900">{{ $match->displayName() }}</span>
                                     <span class="block text-xs text-gray-500">{{ $match->sku }}</span>
                                 </span>
+                                <span class="ms-3 shrink-0 text-xs text-gray-500">{{ $match->onHand() }} on hand</span>
                             </button>
                         </li>
                     @endforeach

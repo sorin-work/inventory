@@ -76,6 +76,7 @@ trait PicksVariant
         return $this->activeVariants()
             ->search($this->search)
             ->with('product')
+            ->withOnHand()
             ->limit(8)
             ->get();
     }
