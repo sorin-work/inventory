@@ -51,6 +51,24 @@ abstract class StockForm extends Component
     }
 
     /**
+     * Quantity on hand per location for the picked variant.
+     *
+     * @return array<int, int>
+     */
+    public function levels(): array
+    {
+        if ($this->variantId === null) {
+            return [];
+        }
+
+        return ProductVariant::query()->findOrFail($this->variantId)
+            ->stockLevels()
+            ->pluck('quantity', 'location_id')
+            ->map(fn ($qty) => (int) $qty)
+            ->all();
+    }
+
+    /**
      * @return Collection<int, StockMovement>
      */
     public function recent(): Collection

@@ -23,6 +23,8 @@
                         </x-field>
                     </div>
 
+                    @include('livewire.stock.partials.levels')
+
                     <x-field label="Note" for="note" error="note">
                         <x-text-input id="note" type="text" wire:model="note" class="block w-full" />
                     </x-field>

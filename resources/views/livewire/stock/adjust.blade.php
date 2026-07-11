@@ -33,6 +33,8 @@
                     @endif
                 </div>
 
+                @include('livewire.stock.partials.levels')
+
                 <x-field label="Note" for="note" error="note" :hint="$mode === 'change' && $reason === 'other' ? 'Required for “Other”' : null">
                     <x-text-input id="note" type="text" wire:model="note" class="block w-full" />
                 </x-field>
