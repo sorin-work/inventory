@@ -13,10 +13,20 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="h-full font-sans antialiased text-gray-900">
-        <div class="min-h-full">
+        <div x-data="{ sidebarOpen: false }" class="min-h-full">
             <livewire:layout.navigation />
 
             <div class="lg:pl-64">
+                <div class="sticky top-0 z-30 flex h-14 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm lg:hidden">
+                    <button type="button" class="-m-2.5 p-2.5 text-gray-700" @click="sidebarOpen = true">
+                        <span class="sr-only">Open navigation</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+                    <span class="text-sm font-semibold">{{ auth()->user()->shop->name }}</span>
+                </div>
+
                 <main class="py-8">
                     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <x-flash />

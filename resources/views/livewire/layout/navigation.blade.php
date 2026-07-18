@@ -54,7 +54,13 @@ new class extends Component
 @endphp
 
 <div>
-    <aside class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-200 bg-white">
+    {{-- Mobile backdrop --}}
+    <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-40 bg-gray-900/50 lg:hidden" @click="sidebarOpen = false" style="display: none;"></div>
+
+    <aside
+        class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-200 bg-white transition-transform lg:translate-x-0"
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+    >
         <div class="flex h-16 shrink-0 items-center gap-3 border-b border-gray-100 px-5">
             <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-2">
                 <x-application-logo class="h-8 w-8 fill-current text-indigo-600" />
