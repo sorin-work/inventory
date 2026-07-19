@@ -95,7 +95,7 @@ new class extends Component
 
         <div class="border-t border-gray-100 p-4">
             <div class="text-sm font-medium text-gray-900" x-data="{{ json_encode(['name' => $user->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
-            <div class="truncate text-xs text-gray-500">{{ $user->email }}</div>
+            <div class="truncate text-xs text-gray-500">{{ $user->email }} · {{ $user->role->label() }}</div>
             <div class="mt-3 flex gap-3 text-sm">
                 <a href="{{ route('profile') }}" wire:navigate class="text-gray-600 hover:text-gray-900">Profile</a>
                 <button wire:click="logout" class="text-gray-600 hover:text-gray-900">Log out</button>
