@@ -29,6 +29,12 @@ test('scanning a barcode picks the variant', function () {
         ->assertSet('search', '');
 });
 
+test('typing a sku in any case picks the variant', function () {
+    Livewire::test(Receive::class)
+        ->set('search', 'mug-white')
+        ->assertSet('variantId', $this->variant->id);
+});
+
 test('archived products can not be picked', function () {
     $this->variant->product->update(['archived_at' => now()]);
 
