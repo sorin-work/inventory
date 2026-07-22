@@ -100,6 +100,7 @@ test('places, receives in two deliveries and completes an order', function () {
         ->call('placeOrder')
         ->assertSee('Ordered')
         ->call('startReceiving')
+        ->assertSet("receive.{$line->id}", '12')
         ->set("receive.{$line->id}", '5')
         ->call('saveReceipt')
         ->assertHasNoErrors();
@@ -108,7 +109,7 @@ test('places, receives in two deliveries and completes an order', function () {
         ->and($this->mug->quantityAt($this->location))->toBe(5);
 
     $component->call('startReceiving')
-        ->set("receive.{$line->id}", '7')
+        ->assertSet("receive.{$line->id}", '7')
         ->call('saveReceipt')
         ->assertSee('Received');
 

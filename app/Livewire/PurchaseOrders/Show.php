@@ -35,7 +35,7 @@ class Show extends Component
     public function startReceiving(): void
     {
         $this->receiving = true;
-        $this->receive = [];
+        $this->receive = $this->order->lines->mapWithKeys(fn ($line) => [$line->id => (string) $line->remaining()])->all();
     }
 
     public function cancelReceiving(): void
