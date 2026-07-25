@@ -90,6 +90,23 @@
         </x-card>
     </form>
 
+    @php $receipts = $this->receipts(); @endphp
+    @if ($receipts->isNotEmpty())
+        <x-card title="Receipts" :padding="false">
+            <ul class="divide-y divide-gray-100">
+                @foreach ($receipts as $movement)
+                    <li class="flex justify-between px-4 py-2.5 text-sm">
+                        <span>
+                            <span class="font-medium text-gray-900">+{{ $movement->quantity }}</span>
+                            {{ $movement->variant->displayName() }}
+                        </span>
+                        <span class="text-gray-500">{{ $movement->created_at->format('M j, Y H:i') }} · {{ $movement->user?->name ?? '—' }}</span>
+                    </li>
+                @endforeach
+            </ul>
+        </x-card>
+    @endif
+
     <p class="mt-6 text-xs text-gray-500">
         Created {{ $order->created_at->toFormattedDateString() }}@if ($order->user) by {{ $order->user->name }}@endif.
         @if ($order->received_at) Fully received {{ $order->received_at->toFormattedDateString() }}. @endif

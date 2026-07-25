@@ -6,7 +6,9 @@ use App\Exceptions\PurchaseOrderException;
 use App\Exceptions\StockException;
 use App\Livewire\Concerns\WithShop;
 use App\Models\PurchaseOrder;
+use App\Models\StockMovement;
 use App\Services\PurchaseOrderService;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -69,6 +71,16 @@ class Show extends Component
         $this->authorizeOwner();
 
         $this->run(fn () => $orders->cancel($this->order), 'Order cancelled.');
+    }
+
+    /**
+     * Receipts booked against this order, newest first.
+     *
+     * @return Collection<int, StockMovement>
+     */
+    public function receipts(): Collection
+    {
+        return $this->order->movements()->with('variant.product', 'user')->latestFirst()->get();
     }
 
     private function run(callable $action, ?string $message): bool
