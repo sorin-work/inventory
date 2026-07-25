@@ -20,6 +20,9 @@
             @if ($isOwner && in_array($status->value, ['draft', 'ordered'], true) && ! $order->hasReceipts())
                 <x-secondary-button wire:click="cancelOrder" wire:confirm="Cancel {{ $order->number }}?">Cancel order</x-secondary-button>
             @endif
+            @if ($isOwner && $status->isEditable())
+                <x-secondary-button wire:click="delete" wire:confirm="Delete draft {{ $order->number }}?" class="text-rose-600">Delete</x-secondary-button>
+            @endif
         </x-slot>
     </x-page-header>
 

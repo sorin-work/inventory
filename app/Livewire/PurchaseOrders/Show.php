@@ -73,6 +73,23 @@ class Show extends Component
         $this->run(fn () => $orders->cancel($this->order), 'Order cancelled.');
     }
 
+    public function delete(): void
+    {
+        $this->authorizeOwner();
+
+        if (! $this->order->status->isEditable()) {
+            $this->addError('order', 'Only drafts can be deleted. Cancel the order instead.');
+
+            return;
+        }
+
+        $number = $this->order->number;
+        $this->order->delete();
+
+        session()->flash('status', "{$number} deleted.");
+        $this->redirectRoute('purchase-orders.index', navigate: true);
+    }
+
     /**
      * Receipts booked against this order, newest first.
      *

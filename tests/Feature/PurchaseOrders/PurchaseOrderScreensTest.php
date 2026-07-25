@@ -128,11 +128,15 @@ test('over receiving shows an error', function () {
         ->assertHasErrors('order');
 });
 
-test('owners can cancel an order', function () {
+test('owners can cancel an order and delete a draft', function () {
     $order = placedOrder();
 
     Livewire::test(Show::class, ['purchaseOrder' => $order])->call('cancelOrder');
     expect($order->fresh()->status)->toBe(PurchaseOrderStatus::Cancelled);
+
+    $draft = app(PurchaseOrderService::class)->createDraft($this->shop, $this->supplier, $this->location, []);
+    Livewire::test(Show::class, ['purchaseOrder' => $draft])->call('delete')->assertRedirect(route('purchase-orders.index'));
+    expect(PurchaseOrder::find($draft->id))->toBeNull();
 });
 
 test('lists open orders first and filters by status', function () {
