@@ -5,7 +5,6 @@ use App\Livewire\Settings\ShopSettings;
 use App\Livewire\Team\Index;
 use App\Models\Shop;
 use App\Models\User;
-use App\Support\Money;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Livewire;
@@ -79,5 +78,5 @@ test('updates the shop name and currency', function () {
         ->assertHasNoErrors();
 
     expect($this->shop->fresh()->name)->toBe('Harbour Lane Goods')
-        ->and(Money::format(1250, $this->shop->fresh()->currency))->toBe('€12.50');
+        ->and($this->shop->fresh()->money(1250))->toBe('€12.50');
 });

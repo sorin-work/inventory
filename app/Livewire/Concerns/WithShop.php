@@ -4,7 +4,6 @@ namespace App\Livewire\Concerns;
 
 use App\Models\Shop;
 use App\Models\User;
-use App\Support\Money;
 
 trait WithShop
 {
@@ -20,7 +19,7 @@ trait WithShop
 
     public function money(int|float|null $cents): string
     {
-        return Money::format($cents, $this->shop()->currency);
+        return $this->shop()->money($cents);
     }
 
     protected function authorizeOwner(): void

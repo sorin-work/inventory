@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Role;
+use App\Support\Money;
 use Database\Factories\ShopFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -82,5 +83,10 @@ class Shop extends Model
     public function defaultLocation(): ?Location
     {
         return $this->locations()->orderByDesc('is_default')->orderBy('id')->first();
+    }
+
+    public function money(int|float|null $cents): string
+    {
+        return Money::format($cents, $this->currency);
     }
 }
