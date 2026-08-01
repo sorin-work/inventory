@@ -160,3 +160,18 @@ test('flags late orders', function () {
 
     $this->get(route('purchase-orders.index'))->assertSee('(late)', false);
 });
+
+test('a short delivery can be closed from the order page', function () {
+    $order = placedOrder();
+    $line = $order->lines->first();
+
+    Livewire::test(Show::class, ['purchaseOrder' => $order])
+        ->call('startReceiving')
+        ->set("receive.{$line->id}", '8')
+        ->call('saveReceipt')
+        ->assertSee('Close short')
+        ->call('closeShort')
+        ->assertHasNoErrors();
+
+    expect($order->fresh()->status)->toBe(PurchaseOrderStatus::Received);
+});

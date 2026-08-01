@@ -66,6 +66,11 @@ class Show extends Component
         }
     }
 
+    public function closeShort(PurchaseOrderService $orders): void
+    {
+        $this->run(fn () => $orders->closeShort($this->order), 'Order closed. The rest is no longer expected.');
+    }
+
     public function cancelOrder(PurchaseOrderService $orders): void
     {
         $this->authorizeOwner();

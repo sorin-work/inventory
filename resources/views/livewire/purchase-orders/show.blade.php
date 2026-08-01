@@ -17,6 +17,9 @@
             @if ($status->canReceive() && ! $receiving)
                 <x-primary-button type="button" wire:click="startReceiving">Receive delivery</x-primary-button>
             @endif
+            @if ($status->value === 'partial' && ! $receiving)
+                <x-secondary-button wire:click="closeShort" wire:confirm="Close {{ $order->number }}? The {{ $order->lines->sum(fn ($line) => $line->remaining()) }} units still outstanding will no longer count as on order.">Close short</x-secondary-button>
+            @endif
             @if ($isOwner && in_array($status->value, ['draft', 'ordered'], true) && ! $order->hasReceipts())
                 <x-secondary-button wire:click="cancelOrder" wire:confirm="Cancel {{ $order->number }}?">Cancel order</x-secondary-button>
             @endif

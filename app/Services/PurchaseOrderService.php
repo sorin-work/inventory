@@ -141,6 +141,24 @@ class PurchaseOrderService
         });
     }
 
+    /**
+     * Marks a partly delivered order as done when the supplier won't send
+     * the rest. What's still outstanding stops counting as on order.
+     */
+    public function closeShort(PurchaseOrder $order): PurchaseOrder
+    {
+        if ($order->status !== PurchaseOrderStatus::PartiallyReceived) {
+            throw PurchaseOrderException::cannot('closed', $order->status);
+        }
+
+        $order->forceFill([
+            'status' => PurchaseOrderStatus::Received,
+            'received_at' => now(),
+        ])->save();
+
+        return $order;
+    }
+
     public function cancel(PurchaseOrder $order): PurchaseOrder
     {
         if (! in_array($order->status, [PurchaseOrderStatus::Draft, PurchaseOrderStatus::Ordered], true)) {

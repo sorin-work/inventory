@@ -156,3 +156,18 @@ test('low stock selections become one draft per supplier', function () {
         ->and($teaOrder->lines->first()->quantity_ordered)->toBe(24)
         ->and($teaOrder->lines->first()->unit_cost_cents)->toBe(480);
 });
+
+test('a partly received order can be closed short', function () {
+    $order = $this->orders->markOrdered(draft());
+    $order = $this->orders->receive($order, [$order->lines->first()->id => 4]);
+
+    $order = $this->orders->closeShort($order);
+
+    expect($order->status)->toBe(PurchaseOrderStatus::Received)
+        ->and($order->received_at)->not->toBeNull()
+        ->and($order->lines()->sum('quantity_received'))->toBe(4);
+});
+
+test('only partly received orders can be closed short', function () {
+    $this->orders->closeShort($this->orders->markOrdered(draft()));
+})->throws(PurchaseOrderException::class, 'cannot be closed');
