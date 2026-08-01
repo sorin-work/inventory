@@ -159,6 +159,28 @@ class PurchaseOrderService
         return $order;
     }
 
+    /**
+     * A new draft with the same supplier, location and lines, for suppliers
+     * you order the same things from every time.
+     */
+    public function duplicate(PurchaseOrder $order, ?User $user = null): PurchaseOrder
+    {
+        $order->loadMissing('lines', 'supplier', 'location');
+
+        return $this->createDraft(
+            Shop::findOrFail($order->shop_id),
+            $order->supplier,
+            $order->location,
+            $order->lines->map(fn ($line) => [
+                'product_variant_id' => $line->product_variant_id,
+                'quantity_ordered' => $line->quantity_ordered,
+                'unit_cost_cents' => $line->unit_cost_cents,
+            ])->all(),
+            ['notes' => $order->notes],
+            $user,
+        );
+    }
+
     public function cancel(PurchaseOrder $order): PurchaseOrder
     {
         if (! in_array($order->status, [PurchaseOrderStatus::Draft, PurchaseOrderStatus::Ordered], true)) {

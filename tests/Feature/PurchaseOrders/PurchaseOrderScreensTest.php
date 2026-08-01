@@ -175,3 +175,13 @@ test('a short delivery can be closed from the order page', function () {
 
     expect($order->fresh()->status)->toBe(PurchaseOrderStatus::Received);
 });
+
+test('order again copies the order into a new draft', function () {
+    $order = placedOrder();
+
+    Livewire::test(Show::class, ['purchaseOrder' => $order])
+        ->call('duplicate')
+        ->assertRedirect();
+
+    expect(PurchaseOrder::where('status', 'draft')->sole()->lines)->toHaveCount(1);
+});

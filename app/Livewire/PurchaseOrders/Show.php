@@ -71,6 +71,14 @@ class Show extends Component
         $this->run(fn () => $orders->closeShort($this->order), 'Order closed. The rest is no longer expected.');
     }
 
+    public function duplicate(PurchaseOrderService $orders): void
+    {
+        $copy = $orders->duplicate($this->order, $this->user());
+
+        session()->flash('status', "{$copy->number} created from {$this->order->number}.");
+        $this->redirectRoute('purchase-orders.show', $copy, navigate: true);
+    }
+
     public function cancelOrder(PurchaseOrderService $orders): void
     {
         $this->authorizeOwner();

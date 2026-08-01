@@ -171,3 +171,17 @@ test('a partly received order can be closed short', function () {
 test('only partly received orders can be closed short', function () {
     $this->orders->closeShort($this->orders->markOrdered(draft()));
 })->throws(PurchaseOrderException::class, 'cannot be closed');
+
+test('an order can be copied into a new draft', function () {
+    $order = $this->orders->markOrdered(draft());
+    $order->update(['notes' => 'Ring the bell']);
+
+    $copy = $this->orders->duplicate($order->fresh());
+
+    expect($copy->status)->toBe(PurchaseOrderStatus::Draft)
+        ->and($copy->number)->toBe('PO-0002')
+        ->and($copy->supplier_id)->toBe($order->supplier_id)
+        ->and($copy->notes)->toBe('Ring the bell')
+        ->and($copy->lines->map->only('product_variant_id', 'quantity_ordered', 'unit_cost_cents')->all())
+        ->toBe($order->lines->map->only('product_variant_id', 'quantity_ordered', 'unit_cost_cents')->all());
+});
