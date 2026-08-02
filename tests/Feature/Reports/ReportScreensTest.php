@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Reports\LowStock;
+use App\Livewire\Reports\Valuation;
 use App\Models\PurchaseOrder;
 use App\Models\Shop;
 use App\Services\StockService;
@@ -60,4 +61,8 @@ test('the valuation page shows totals', function () {
         ->assertOk()
         ->assertSee('$46.00')
         ->assertSee('Stoneware mug');
+
+    Livewire::test(Valuation::class)
+        ->set('locationId', (string) otherLocation($this->shop)->id)
+        ->assertSee('No stock on hand');
 });

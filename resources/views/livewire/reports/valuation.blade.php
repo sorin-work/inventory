@@ -1,7 +1,16 @@
 @php $report = $this->report(); @endphp
 
 <div>
-    <x-page-header title="Stock valuation" description="What your stock on hand is worth at weighted average cost." />
+    <x-page-header title="Stock valuation" description="What your stock on hand is worth at weighted average cost.">
+        <x-slot name="actions">
+            <x-select wire:model.live="locationId">
+                <option value="">All locations</option>
+                @foreach ($this->locations() as $location)
+                    <option value="{{ $location->id }}">{{ $location->name }}</option>
+                @endforeach
+            </x-select>
+        </x-slot>
+    </x-page-header>
 
     <dl class="mb-6 grid gap-4 sm:grid-cols-2">
         <x-stat label="Stock value" :value="$this->money($report['total_cents'])" hint="At average cost" />
