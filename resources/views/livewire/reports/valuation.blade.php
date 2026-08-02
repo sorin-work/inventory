@@ -12,9 +12,10 @@
         </x-slot>
     </x-page-header>
 
-    <dl class="mb-6 grid gap-4 sm:grid-cols-2">
+    <dl class="mb-6 grid gap-4 sm:grid-cols-3">
         <x-stat label="Stock value" :value="$this->money($report['total_cents'])" hint="At average cost" />
         <x-stat label="Units on hand" :value="number_format($report['total_units'])" />
+        <x-stat label="Retail value" :value="$this->money($report['retail_cents'])" :hint="$report['retail_cents'] > 0 ? 'Margin '.round(100 * ($report['retail_cents'] - $report['total_cents']) / $report['retail_cents']).'% at list prices' : null" />
     </dl>
 
     <div class="mb-6 grid gap-6 lg:grid-cols-2">

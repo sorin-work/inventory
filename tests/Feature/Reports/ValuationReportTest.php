@@ -25,6 +25,7 @@ test('values stock at average cost by location and category', function () {
 
     expect($report['total_cents'])->toBe(20 * 1000 + 3 * 1150)
         ->and($report['total_units'])->toBe(23)
+        ->and($report['retail_cents'])->toBe(20 * 2400 + 3 * 2800)
         ->and($report['by_location']->firstWhere('name', 'Main store')->value_cents)->toBe(10 * 1000 + 3 * 1150)
         ->and($report['by_location']->firstWhere('name', 'Back room')->value_cents)->toBe(10 * 1000)
         ->and($report['by_category']->firstWhere('name', 'Candles')->units)->toBe(20)

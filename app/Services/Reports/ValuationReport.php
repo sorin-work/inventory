@@ -18,6 +18,7 @@ class ValuationReport
      * @return array{
      *     total_cents: int,
      *     total_units: int,
+     *     retail_cents: int,
      *     by_location: Collection<int, object>,
      *     by_category: Collection<int, object>,
      *     rows: Collection<int, object>,
@@ -52,6 +53,7 @@ class ValuationReport
                 $row->quantity = (int) $row->quantity;
                 $row->average_cost = (float) $row->average_cost;
                 $row->value_cents = AverageCost::value($row->quantity, $row->average_cost);
+                $row->retail_cents = $row->quantity * (int) $row->price_cents;
                 $row->category_name ??= 'Uncategorised';
 
                 return $row;
@@ -90,6 +92,7 @@ class ValuationReport
         return [
             'total_cents' => $levels->sum('value_cents'),
             'total_units' => $levels->sum('quantity'),
+            'retail_cents' => $levels->sum('retail_cents'),
             'by_location' => $group('location_name'),
             'by_category' => $group('category_name'),
             'rows' => $rows,
