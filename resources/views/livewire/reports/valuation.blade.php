@@ -3,6 +3,7 @@
 <div>
     <x-page-header title="Stock valuation" description="What your stock on hand is worth at weighted average cost.">
         <x-slot name="actions">
+            <a href="{{ route('reports.valuation.export', array_filter(['location' => $locationId])) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">Export CSV</a>
             <x-select wire:model.live="locationId">
                 <option value="">All locations</option>
                 @foreach ($this->locations() as $location)

@@ -66,3 +66,14 @@ test('the valuation page shows totals', function () {
         ->set('locationId', (string) otherLocation($this->shop)->id)
         ->assertSee('No stock on hand');
 });
+
+test('the valuation exports as csv for owners only', function () {
+    $variant = variant($this->shop, ['sku' => 'MUG-1'], ['name' => 'Stoneware mug']);
+    app(StockService::class)->receive($variant, $this->location, 4, 1150);
+
+    $csv = $this->get(route('reports.valuation.export'))->assertOk()->streamedContent();
+
+    expect($csv)->toContain('MUG-1,"Stoneware mug",Uncategorised,4,11.50,46.00');
+
+    $this->actingAs(staff($this->shop))->get(route('reports.valuation.export'))->assertForbidden();
+});

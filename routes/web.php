@@ -4,6 +4,7 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\MovementExportController;
 use App\Http\Controllers\ProductExportController;
 use App\Http\Controllers\ProductTemplateController;
+use App\Http\Controllers\ValuationExportController;
 use App\Livewire\Categories;
 use App\Livewire\Dashboard;
 use App\Livewire\Locations;
@@ -58,6 +59,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('can:manage-shop')->group(function () {
         Route::get('reports/valuation', Reports\Valuation::class)->name('reports.valuation');
+        Route::get('reports/valuation/export', ValuationExportController::class)->name('reports.valuation.export');
         Route::get('team', Team\Index::class)->name('team.index');
         Route::get('settings/shop', ShopSettings::class)->name('settings.shop');
     });
