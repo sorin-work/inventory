@@ -1,7 +1,11 @@
 @php $rows = $this->rows(); @endphp
 
 <div>
-    <x-page-header title="Low stock" description="Variants at or below their reorder point, counting stock across all locations. Stock already on order is taken into account." />
+    <x-page-header title="Low stock" description="Variants at or below their reorder point, counting stock across all locations. Stock already on order is taken into account.">
+        <x-slot name="actions">
+            <a href="{{ route('reports.low-stock.export', array_filter(['category' => $categoryId, 'supplier' => $supplierId])) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">Export CSV</a>
+        </x-slot>
+    </x-page-header>
 
     <div class="mb-4 flex flex-wrap gap-3">
         <x-select wire:model.live="categoryId">

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\LowStockExportController;
 use App\Http\Controllers\MovementExportController;
 use App\Http\Controllers\ProductExportController;
 use App\Http\Controllers\ProductTemplateController;
@@ -47,6 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('purchase-orders/{purchaseOrder}/edit', PurchaseOrders\Form::class)->name('purchase-orders.edit');
 
     Route::get('reports/low-stock', Reports\LowStock::class)->name('reports.low-stock');
+    Route::get('reports/low-stock/export', LowStockExportController::class)->name('reports.low-stock.export');
 
     Route::get('suppliers', Suppliers\Index::class)->name('suppliers.index');
     Route::get('suppliers/create', Suppliers\Form::class)->name('suppliers.create');

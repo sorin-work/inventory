@@ -67,6 +67,16 @@ test('the valuation page shows totals', function () {
         ->assertSee('No stock on hand');
 });
 
+test('the low stock report exports as csv', function () {
+    variant($this->shop, ['sku' => 'CANDLE', 'reorder_point' => 6, 'reorder_quantity' => 12], ['supplier_id' => $this->supplier->id]);
+
+    $csv = $this->get(route('reports.low-stock.export'))->assertOk()->streamedContent();
+
+    expect($csv)->toContain('sku,product,supplier')
+        ->toContain('CANDLE')
+        ->toContain('"Wick & Wax Co.",0,6,0,12');
+});
+
 test('the valuation exports as csv for owners only', function () {
     $variant = variant($this->shop, ['sku' => 'MUG-1'], ['name' => 'Stoneware mug']);
     app(StockService::class)->receive($variant, $this->location, 4, 1150);
