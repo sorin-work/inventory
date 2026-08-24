@@ -32,7 +32,7 @@ final class LowStockRow
 
         $needed = $point - $this->available() + 1;
 
-        return $this->variant->reorder_quantity ?: $needed;
+        return max((int) $this->variant->reorder_quantity, $needed);
     }
 
     public function isCoveredByOpenOrders(): bool

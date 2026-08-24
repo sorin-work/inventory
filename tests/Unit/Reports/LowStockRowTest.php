@@ -18,7 +18,8 @@ test('orders the reorder quantity when one is set', function () {
 
 test('orders enough to get back above the reorder point', function () {
     // 5 - 2 + 1 = 4 brings stock to 6, above the point of 5
-    expect(lowStockRow(onHand: 2, onOrder: 0, point: 5)->suggestedQuantity())->toBe(4);
+    expect(lowStockRow(onHand: 2, onOrder: 0, point: 5)->suggestedQuantity())->toBe(4)
+        ->and(lowStockRow(onHand: -3, onOrder: 0, point: 5, quantity: 4)->suggestedQuantity())->toBe(9);
 });
 
 test('stock already on order counts towards the suggestion', function () {
