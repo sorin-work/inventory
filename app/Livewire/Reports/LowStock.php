@@ -116,7 +116,7 @@ class LowStock extends Component
 
         $this->order = $rows->mapWithKeys(fn (LowStockRow $row) => [$row->variant->id => (string) $row->suggestedQuantity()])->all();
         $this->selected = $rows
-            ->filter(fn (LowStockRow $row) => $row->suggestedQuantity() > 0)
+            ->filter(fn (LowStockRow $row) => $row->suggestedQuantity() > 0 && $row->variant->product->supplier_id !== null)
             ->map(fn (LowStockRow $row) => $row->variant->id)
             ->values()
             ->all();

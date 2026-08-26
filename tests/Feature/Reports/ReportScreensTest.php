@@ -22,7 +22,8 @@ test('the low stock report suggests and preselects what to order', function () {
         ->assertSee('CANDLE')
         ->assertSee('No supplier')
         ->assertSet("order.{$candle->id}", '12')
-        ->assertSet("order.{$loose->id}", '3');
+        ->assertSet("order.{$loose->id}", '3')
+        ->assertSet('selected', [$candle->id]);
 });
 
 test('creates draft orders from the selection', function () {
