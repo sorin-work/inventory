@@ -37,6 +37,13 @@ test('lists variants at or below their reorder point', function () {
     expect($ids)->toEqualCanonicalizing([$at->id, $below->id, $out->id]);
 });
 
+test('counts stock in every location', function () {
+    $variant = stocked(3, 5);
+    $this->stock->receive($variant, otherLocation($this->shop), 3, 100);
+
+    expect($this->report->rows($this->shop))->toBeEmpty();
+});
+
 test('leaves out archived products and other shops', function () {
     stocked(0, 5, ['archived_at' => now()]);
     variant(Shop::factory()->create(), ['reorder_point' => 5]);
