@@ -29,3 +29,11 @@ test('stock already on order counts towards the suggestion', function () {
         ->and($row->suggestedQuantity())->toBe(0)
         ->and($row->isCoveredByOpenOrders())->toBeTrue();
 });
+
+test('partly covered shortfalls still suggest an order', function () {
+    $row = lowStockRow(onHand: 0, onOrder: 2, point: 5);
+
+    expect($row->suggestedQuantity())->toBe(4)
+        ->and($row->isCoveredByOpenOrders())->toBeFalse()
+        ->and($row->isOut())->toBeTrue();
+});
