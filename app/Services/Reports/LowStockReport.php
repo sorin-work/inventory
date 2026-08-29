@@ -47,7 +47,10 @@ class LowStockReport
                 onHand: $variant->onHand(),
                 onOrder: $onOrder[$variant->id] ?? 0,
             ))
-            ->sortBy(fn (LowStockRow $row) => $row->variant->product->name)
+            ->sortBy([
+                fn (LowStockRow $a, LowStockRow $b) => $a->onHand - $a->variant->reorder_point <=> $b->onHand - $b->variant->reorder_point,
+                fn (LowStockRow $a, LowStockRow $b) => $a->variant->product->name <=> $b->variant->product->name,
+            ])
             ->values();
     }
 

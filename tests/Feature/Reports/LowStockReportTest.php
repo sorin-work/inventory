@@ -74,3 +74,10 @@ test('filters by category and supplier', function () {
     expect($this->report->rows($this->shop, categoryId: $candles->id)->pluck('variant.id')->all())->toBe([$candle->id])
         ->and($this->report->rows($this->shop, supplierId: $supplier->id)->pluck('variant.id')->all())->toBe([$supplied->id]);
 });
+
+test('sorts the most urgent first', function () {
+    $nearly = stocked(4, 5);
+    $empty = stocked(0, 10);
+
+    expect($this->report->rows($this->shop)->pluck('variant.id')->all())->toBe([$empty->id, $nearly->id]);
+});
