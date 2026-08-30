@@ -171,6 +171,14 @@ tests/
   Unit/                pure helpers
 ```
 
+## Multi-tenancy
+
+Every shop-owned model uses the `BelongsToShop` trait. It adds a global
+scope that limits queries to the signed-in user's shop and fills in
+`shop_id` when a record is created, so route model binding returns 404 for
+another shop's records. Console commands and the seeder run without a user
+and pass `shop_id` explicitly.
+
 ## License
 
 MIT
