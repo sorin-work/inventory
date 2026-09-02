@@ -40,7 +40,7 @@
         <x-stat label="On hand" :value="number_format($product->variants->sum(fn ($v) => array_sum($matrix[$v->id] ?? []))).' '.$product->unit" />
         <x-stat label="On order" :value="number_format(array_sum($onOrder))" />
         <x-stat label="Stock value" :value="$isOwner ? $this->money($this->stockValue()) : '—'" hint="At average cost" />
-        <x-stat label="Supplier" :value="$product->supplier?->name ?? '—'" />
+        <x-stat label="Supplier" :value="$product->supplier?->name ?? '—'" :hint="$product->supplier?->lead_time_days ? $product->supplier->lead_time_days.' day lead time' : null" />
     </dl>
 
     @if ($product->description)
