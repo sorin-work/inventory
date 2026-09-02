@@ -6,7 +6,13 @@
 @endphp
 
 <div>
-    <x-page-header title="Dashboard" :description="'Good '.(now()->hour < 12 ? 'morning' : (now()->hour < 18 ? 'afternoon' : 'evening')).', '.Str::before(auth()->user()->name, ' ').'.'" />
+    <x-page-header title="Dashboard" :description="'Good '.(now()->hour < 12 ? 'morning' : (now()->hour < 18 ? 'afternoon' : 'evening')).', '.Str::before(auth()->user()->name, ' ').'.'">
+        <x-slot name="actions">
+            <x-link-button variant="secondary" href="{{ route('stock.receive') }}">Receive</x-link-button>
+            <x-link-button variant="secondary" href="{{ route('stock.sell') }}">Sell</x-link-button>
+            <x-link-button href="{{ route('products.create') }}">New product</x-link-button>
+        </x-slot>
+    </x-page-header>
 
     <dl class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <x-stat label="Products" :value="number_format($stats['variants'])" hint="Active variants" :href="route('products.index')" />
