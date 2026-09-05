@@ -42,6 +42,12 @@ class Import extends Component
         }
     }
 
+    public function updatedFile(): void
+    {
+        $this->result = null;
+        $this->dryRun = true;
+    }
+
     public function render()
     {
         return view('livewire.products.import');
