@@ -137,6 +137,12 @@ class Form extends Component
             $combinations = $next;
         }
 
+        if (count($combinations) > self::MAX_VARIANTS) {
+            $this->addError('options', 'That makes '.count($combinations).' variants. The limit is '.self::MAX_VARIANTS.'.');
+
+            return;
+        }
+
         $existing = collect($this->variants)->keyBy(fn ($v) => Str::lower(implode('|', $v['values'])));
         $template = $this->variants[0] ?? $this->blankVariant();
 

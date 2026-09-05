@@ -72,6 +72,20 @@ test('generates a variant for each combination of options', function () {
         ->and($product->variants->last()->optionLabel())->toBe('L/XL / Navy');
 });
 
+test('refuses to generate more than a hundred variants', function () {
+    Livewire::test(Form::class)
+        ->set('name', 'Paint')
+        ->call('addOption')
+        ->set('options.0.name', 'Shade')
+        ->set('options.0.values', implode(', ', range(1, 11)))
+        ->call('addOption')
+        ->set('options.1.name', 'Finish')
+        ->set('options.1.values', implode(', ', range(1, 10)))
+        ->call('generateVariants')
+        ->assertHasErrors('options')
+        ->assertCount('variants', 1);
+});
+
 test('needs values for every option before generating', function () {
     Livewire::test(Form::class)
         ->call('addOption')
