@@ -54,6 +54,9 @@
                                     <li>{{ $result['dry_run'] ? 'create' : 'created' }} suppliers: {{ implode(', ', $result['suppliers_created']) }}</li>
                                 @endif
                             </ul>
+                            @if ($result['dry_run'])
+                                <x-primary-button type="button" class="mt-3" wire:click="$set('dryRun', false)">Looks right, untick “check only”</x-primary-button>
+                            @endif
                         </div>
                     @endif
                 </div>
