@@ -4,6 +4,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Shop;
+use App\Models\Supplier;
 use App\Services\Csv\ProductImporter;
 
 beforeEach(function () {
@@ -61,6 +62,18 @@ test('adds new skus to an existing product with the same name', function () {
     import("product,sku\nstoneware MUG,MUG-GREEN\n");
 
     expect($variant->product->variants()->pluck('sku')->all())->toBe(['MUG-WHITE', 'MUG-GREEN']);
+});
+
+test('reuses categories and suppliers regardless of case', function () {
+    Category::factory()->create(['shop_id' => $this->shop->id, 'name' => 'Candles']);
+    supplier($this->shop, ['name' => 'Wick & Wax Co.']);
+
+    $result = import("product,sku,category,supplier\nFig candle,CANDLE-FIG,candles,WICK & WAX CO.\n");
+
+    expect($result->categoriesCreated)->toBe([])
+        ->and($result->suppliersCreated)->toBe([])
+        ->and(Category::withoutGlobalScopes()->count())->toBe(1)
+        ->and(Supplier::withoutGlobalScopes()->count())->toBe(1);
 });
 
 test('reports every problem with its line number and saves nothing', function () {
