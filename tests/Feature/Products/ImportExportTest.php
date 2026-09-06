@@ -75,6 +75,16 @@ test('uploads a file and checks it before importing', function () {
     expect(ProductVariant::sole()->sku)->toBe('MUG-1');
 });
 
+test('shows row errors from the file', function () {
+    $file = UploadedFile::fake()->createWithContent('products.csv', "product,sku\n,MUG-1\n");
+
+    Livewire::test(Import::class)
+        ->set('file', $file)
+        ->call('import')
+        ->assertSee('Line 2:')
+        ->assertSee('Product name is required.');
+});
+
 test('only accepts csv files', function () {
     Livewire::test(Import::class)
         ->set('file', UploadedFile::fake()->create('photo.png', 20, 'image/png'))
