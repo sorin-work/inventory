@@ -12,3 +12,9 @@ test('leaves ordinary values and negative numbers alone', function () {
         ->and(CsvCell::escape(12))->toBe('12')
         ->and(CsvCell::escape(null))->toBe('');
 });
+
+test('unescape reverses escape', function () {
+    expect(CsvCell::unescape(CsvCell::escape('=HYPERLINK("x")')))->toBe('=HYPERLINK("x")')
+        ->and(CsvCell::unescape("'quoted"))->toBe("'quoted")
+        ->and(CsvCell::unescape('  padded '))->toBe('padded');
+});
