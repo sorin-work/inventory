@@ -48,6 +48,9 @@
                                 <span>at {{ $this->money($movement->unit_price_cents) }}</span>
                             @endif
                             @if ($movement->note && ! $movement->purchaseOrder)
+                                @if ($movement->reason || $movement->unit_price_cents !== null)
+                                    <span class="text-gray-400">·</span>
+                                @endif
                                 <span class="text-gray-500">{{ $movement->note }}</span>
                             @endif
                         </x-td>
