@@ -3,8 +3,10 @@
 use App\Livewire\Categories;
 use App\Livewire\Locations;
 use App\Livewire\Products\Show;
+use App\Livewire\PurchaseOrders;
 use App\Livewire\Suppliers;
 use App\Models\Category;
+use App\Models\PurchaseOrder;
 use App\Models\Shop;
 use App\Services\StockService;
 use Livewire\Livewire;
@@ -54,6 +56,15 @@ test('staff can not delete setup records', function () {
     Livewire::test(Categories\Index::class)->call('delete', $category->id)->assertForbidden();
     Livewire::test(Suppliers\Index::class)->call('delete', $supplier->id)->assertForbidden();
     Livewire::test(Locations\Index::class)->call('delete', $location->id)->assertForbidden();
+});
+
+test('staff can not cancel purchase orders', function () {
+    $order = PurchaseOrder::factory()->create(['shop_id' => $this->shop->id]);
+
+    Livewire::actingAs($this->staff)
+        ->test(PurchaseOrders\Show::class, ['purchaseOrder' => $order])
+        ->call('cancelOrder')
+        ->assertForbidden();
 });
 
 test('staff do not see stock value on the dashboard', function () {
