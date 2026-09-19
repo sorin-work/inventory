@@ -33,9 +33,13 @@ WORKDIR /app
 COPY --from=vendor /app /app
 COPY --from=assets /app/public/build /app/public/build
 
-RUN php artisan package:discover --ansi \
+RUN adduser -D -u 10001 app \
+    && php artisan package:discover --ansi \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
+    && chown -R app:app storage bootstrap/cache /data/caddy /config/caddy \
     && chmod +x /usr/local/bin/app-entrypoint
+
+USER app
 
 ENV APP_ENV=production \
     APP_DEBUG=false \
