@@ -136,6 +136,16 @@ test('variants on one product need their own skus', function () {
         ->assertHasErrors(['variants.0.sku', 'variants.1.sku']);
 });
 
+test('the same sku can exist in another shop', function () {
+    variant(Shop::factory()->create(), ['sku' => 'MUG']);
+
+    Livewire::test(Form::class)
+        ->set('name', 'Mug')
+        ->set('variants.0.sku', 'MUG')
+        ->call('save')
+        ->assertHasNoErrors();
+});
+
 test('edits a product and keeps its variant ids', function () {
     $variant = variant($this->shop, ['sku' => 'MUG-WHITE', 'price_cents' => 2500], ['name' => 'Mug']);
 

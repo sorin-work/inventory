@@ -35,6 +35,15 @@ test('typing a sku in any case picks the variant', function () {
         ->assertSet('variantId', $this->variant->id);
 });
 
+test('searching by name lists matches to pick from', function () {
+    Livewire::test(Receive::class)
+        ->set('search', 'stonew')
+        ->assertSet('variantId', null)
+        ->assertSee('MUG-WHITE')
+        ->call('pickFirstMatch')
+        ->assertSet('variantId', $this->variant->id);
+});
+
 test('archived products can not be picked', function () {
     $this->variant->product->update(['archived_at' => now()]);
 
