@@ -32,3 +32,17 @@ test('values stock at average cost by location and category', function () {
         ->and($report['by_category']->firstWhere('name', 'Uncategorised')->value_cents)->toBe(3450)
         ->and($report['rows']->first()->variant_id)->toBe($candle->id);
 });
+
+test('ignores archived products and other shops', function () {
+    $archived = variant($this->shop);
+    $this->stock->receive($archived, $this->main, 5, 500);
+    $archived->product->update(['archived_at' => now()]);
+
+    $other = Shop::factory()->create();
+    $this->stock->receive(variant($other), mainLocation($other), 5, 500);
+
+    $report = app(ValuationReport::class)->summary($this->shop);
+
+    expect($report['total_cents'])->toBe(0)
+        ->and($report['rows'])->toBeEmpty();
+});
