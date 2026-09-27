@@ -17,6 +17,11 @@ test('rejects gtin codes with a wrong check digit', function (string $code) {
     expect(Barcode::isValid($code))->toBeFalse();
 })->with(['4006381333932', '036000291453', '96385075']);
 
+test('accepts shop printed codes that are not gtins', function () {
+    expect(Barcode::isValid('HLG-00042'))->toBeTrue()
+        ->and(Barcode::isValid('12345'))->toBeTrue();
+});
+
 test('rejects codes with odd characters or the wrong length', function () {
     expect(Barcode::isValid('ab'))->toBeFalse()
         ->and(Barcode::isValid('has space'))->toBeFalse()

@@ -7,6 +7,13 @@ test('normalizes to upper case without spaces', function () {
         ->and(Sku::normalize(null))->toBe('');
 });
 
+test('validates allowed characters', function () {
+    expect(Sku::isValid('TEA-EARL_GREY.100'))->toBeTrue()
+        ->and(Sku::isValid('-LEADING-DASH'))->toBeFalse()
+        ->and(Sku::isValid('HAS/SLASH'))->toBeFalse()
+        ->and(Sku::isValid(''))->toBeFalse();
+});
+
 test('suggests a sku from the name and option values', function () {
     expect(Sku::suggest('Linen Shirt', ['M', 'Blue']))->toBe('LINEN-SHIRT-M-BLUE')
         ->and(Sku::suggest('Café crème mug'))->toBe('CAFE-CREME-MUG')
