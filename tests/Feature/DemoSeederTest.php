@@ -31,6 +31,13 @@ test('the demo seeder builds a shop with history', function () {
     $this->actingAs($demo)->get(route('dashboard'))->assertOk()->assertSee('Harbour Lane Goods');
 });
 
+test('the demo seeder only runs once', function () {
+    $this->seed(DemoSeeder::class);
+    $this->seed(DemoSeeder::class);
+
+    expect(User::where('email', 'demo@example.com')->count())->toBe(1);
+});
+
 test('the database seeder only seeds the demo when asked', function () {
     config(['inventory.seed_demo' => false]);
     $this->seed(DatabaseSeeder::class);
