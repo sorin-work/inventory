@@ -33,6 +33,17 @@ test('values stock at average cost by location and category', function () {
         ->and($report['rows']->first()->variant_id)->toBe($candle->id);
 });
 
+test('can be limited to one location', function () {
+    $variant = variant($this->shop);
+    $this->stock->receive($variant, $this->main, 2, 500);
+    $this->stock->receive($variant, $this->back, 5, 500);
+
+    $report = app(ValuationReport::class)->summary($this->shop, $this->back->id);
+
+    expect($report['total_units'])->toBe(5)
+        ->and($report['total_cents'])->toBe(2500);
+});
+
 test('ignores archived products and other shops', function () {
     $archived = variant($this->shop);
     $this->stock->receive($archived, $this->main, 5, 500);
