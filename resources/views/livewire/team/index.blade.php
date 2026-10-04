@@ -9,6 +9,9 @@
                         <div class="min-w-0">
                             <p class="truncate text-sm font-medium text-gray-900">
                                 {{ $member->name }}
+                                @if ($member->is(auth()->user()))
+                                    <span class="text-xs font-normal text-gray-500">(you)</span>
+                                @endif
                             </p>
                             <p class="truncate text-xs text-gray-500">{{ $member->email }}</p>
                         </div>
