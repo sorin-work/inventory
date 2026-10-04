@@ -58,6 +58,12 @@ test('an export can be imported again without changes', function () {
         ->and(ProductVariant::sole()->product->name)->toBe('=Odd name');
 });
 
+test('the template downloads', function () {
+    $this->get(route('products.template'))
+        ->assertOk()
+        ->assertDownload('products-template.csv');
+});
+
 test('uploads a file and checks it before importing', function () {
     $file = UploadedFile::fake()->createWithContent('products.csv', "product,sku,price\nMug,MUG-1,28\n");
 
