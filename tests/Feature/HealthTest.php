@@ -15,3 +15,7 @@ test('guests see the landing page and are sent to log in for the app', function 
     $this->get('/dashboard')->assertRedirect('/login');
     $this->get('/products')->assertRedirect('/login');
 });
+
+test('signed in users go straight to the dashboard', function () {
+    $this->actingAs(owner())->get('/')->assertRedirect('/dashboard');
+});

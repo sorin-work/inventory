@@ -11,6 +11,12 @@ beforeEach(function () {
     $this->stock = app(StockService::class);
 });
 
+test('a new shop sees how to get started', function () {
+    $this->get(route('dashboard'))
+        ->assertOk()
+        ->assertSee('No stock recorded yet');
+});
+
 test('the dashboard summarises stock', function () {
     $variant = variant($this->shop, ['reorder_point' => 5], ['name' => 'Stoneware mug']);
     $this->stock->receive($variant, mainLocation($this->shop), 4, 1000);
