@@ -138,3 +138,16 @@ test('deleting the default location makes another one the default', function () 
 
     expect($back->fresh()->is_default)->toBeTrue();
 });
+
+test('renames a location', function () {
+    $main = mainLocation($this->shop);
+
+    Livewire::test(Locations\Index::class)
+        ->call('edit', $main->id)
+        ->set('editingName', 'Shop floor')
+        ->set('editingCode', 'floor')
+        ->call('update')
+        ->assertHasNoErrors();
+
+    expect($main->fresh()->name)->toBe('Shop floor')->and($main->fresh()->code)->toBe('FLOOR');
+});

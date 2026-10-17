@@ -80,3 +80,7 @@ test('updates the shop name and currency', function () {
     expect($this->shop->fresh()->name)->toBe('Harbour Lane Goods')
         ->and($this->shop->fresh()->money(1250))->toBe('€12.50');
 });
+
+test('rejects unknown currencies', function () {
+    Livewire::test(ShopSettings::class)->set('currency', 'BTC')->call('save')->assertHasErrors('currency');
+});
