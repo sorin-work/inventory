@@ -179,6 +179,18 @@ scope that limits queries to the signed-in user's shop and fills in
 another shop's records. Console commands and the seeder run without a user
 and pass `shop_id` explicitly.
 
+## Troubleshooting
+
+- **Port already in use**: set `APP_PORT` or `DB_PORT` in `.env` and run
+  `docker compose up` again.
+- **The demo account doesn't exist**: the demo is only seeded when
+  `SEED_DEMO=true` and the database is empty of it. `docker compose down -v`
+  starts over with a fresh database.
+- **Changed `.env` but nothing happened**: the container caches its config
+  on start, so restart it with `docker compose up -d --force-recreate app`.
+- **Styles missing when running locally**: run `npm run dev` (or
+  `npm run build` once) next to `php artisan serve`.
+
 ## License
 
 MIT
