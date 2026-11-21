@@ -179,6 +179,11 @@ scope that limits queries to the signed-in user's shop and fills in
 another shop's records. Console commands and the seeder run without a user
 and pass `shop_id` explicitly.
 
+## Roadmap
+
+Ideas for what might come next, with notes on how I would build them, are in
+[ROADMAP.md](ROADMAP.md).
+
 ## Troubleshooting
 
 - **Port already in use**: set `APP_PORT` or `DB_PORT` in `.env` and run
